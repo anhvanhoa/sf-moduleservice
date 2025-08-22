@@ -1,8 +1,8 @@
 package bootstrap
 
 import (
-	database "github.com/anhvanhoa/module-service/infrastructure/service/database"
-	pkglog "github.com/anhvanhoa/module-service/infrastructure/service/logger"
+	database "module-service/infrastructure/service/database"
+	pkglog "module-service/infrastructure/service/logger"
 
 	"github.com/go-pg/pg/extra/pgdebug/v10"
 	"github.com/go-pg/pg/v10"

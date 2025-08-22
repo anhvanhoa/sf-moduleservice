@@ -3,8 +3,10 @@ package main
 import (
 	"context"
 
-	"github.com/anhvanhoa/module-service/bootstrap"
-	grpcservice "github.com/anhvanhoa/module-service/infrastructure/grpc_service"
+	"module-service/bootstrap"
+	grpcservice "module-service/infrastructure/grpc_service"
+	moduleservice "module-service/infrastructure/grpc_service/module"
+	modulechildservice "module-service/infrastructure/grpc_service/module_child"
 )
 
 func main() {
@@ -16,8 +18,9 @@ func StartGRPCServer() {
 	env := app.Env
 	log := app.Log
 	db := app.DB
-	examService := grpcservice.NewExamService(db, env)
-	grpcSrv := grpcservice.NewGRPCServer(env.PORT_GRPC, examService)
+	moduleService := moduleservice.NewModuleService(db, env)
+	moduleChildService := modulechildservice.NewModuleChildService(db, env)
+	grpcSrv := grpcservice.NewGRPCServer(env.PORT_GRPC, log, moduleService, moduleChildService)
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	if err := grpcSrv.Start(ctx); err != nil {

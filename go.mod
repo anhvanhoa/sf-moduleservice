@@ -1,4 +1,4 @@
-module github.com/anhvanhoa/module-service
+module module-service
 
 go 1.23.0
 

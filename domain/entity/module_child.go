@@ -3,7 +3,7 @@ package entity
 import (
 	"time"
 
-	"github.com/anhvanhoa/module-service/domain/common"
+	"module-service/domain/common"
 )
 
 type ModuleChild struct {

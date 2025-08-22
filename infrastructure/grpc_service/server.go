@@ -5,7 +5,8 @@ import (
 	"fmt"
 	"net"
 
-	proto "github.com/anhvanhoa/module-service/proto/gen/exam/v1"
+	pkglog "module-service/infrastructure/service/logger"
+	proto "module-service/proto/gen/module/v1"
 
 	"buf.build/go/protovalidate"
 	protovalidate_middleware "github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/protovalidate"
@@ -16,9 +17,15 @@ import (
 type GRPCServer struct {
 	server *grpc.Server
 	port   string
+	log    pkglog.Logger
 }
 
-func NewGRPCServer(port string, examService proto.ExamServiceServer) *GRPCServer {
+func NewGRPCServer(
+	port string,
+	log pkglog.Logger,
+	moduleService proto.ModuleServiceServer,
+	moduleChildService proto.ModuleChildServiceServer,
+) *GRPCServer {
 	validator, err := protovalidate.New()
 	if err != nil {
 		panic(err)
@@ -26,37 +33,39 @@ func NewGRPCServer(port string, examService proto.ExamServiceServer) *GRPCServer
 	server := grpc.NewServer(
 		grpc.ChainUnaryInterceptor(
 			protovalidate_middleware.UnaryServerInterceptor(validator),
-			LoggingInterceptor(),
+			LoggingInterceptor(log),
 		),
 	)
 
-	proto.RegisterExamServiceServer(server, examService)
+	proto.RegisterModuleServiceServer(server, moduleService)
+	proto.RegisterModuleChildServiceServer(server, moduleChildService)
 
 	reflection.Register(server)
 
 	return &GRPCServer{
 		server: server,
 		port:   port,
+		log:    log,
 	}
 }
 
 func (s *GRPCServer) Start(ctx context.Context) error {
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", s.port))
 	if err != nil {
-		return fmt.Errorf("failed to listen: %v", err)
+		s.log.Error("failed to listen", err)
 	}
 
-	fmt.Printf("gRPC server starting on port %s\n", s.port)
+	s.log.Info(fmt.Sprintf("gRPC server starting on port %s", s.port))
 
 	go func() {
 		if err := s.server.Serve(lis); err != nil {
-			fmt.Printf("failed to serve: %v", err)
+			s.log.Error("failed to serve", err)
 		}
 	}()
 
 	<-ctx.Done()
 
-	fmt.Println("Shutting down gRPC server...")
+	s.log.Info("Shutting down gRPC server...")
 	s.server.GracefulStop()
 
 	return nil

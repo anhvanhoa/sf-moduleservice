@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	cache "github.com/anhvanhoa/module-service/domain/service/cache"
+	cache "module-service/domain/service/cache"
 
 	"github.com/redis/go-redis/v9"
 )

@@ -3,7 +3,7 @@ package jwt
 import (
 	"time"
 
-	serviceJwt "github.com/anhvanhoa/module-service/domain/service/jwt"
+	serviceJwt "module-service/domain/service/jwt"
 
 	"github.com/golang-jwt/jwt/v5"
 )

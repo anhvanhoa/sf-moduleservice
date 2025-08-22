@@ -3,8 +3,8 @@ package repository
 import (
 	"context"
 
-	"github.com/anhvanhoa/module-service/domain/common"
-	"github.com/anhvanhoa/module-service/domain/entity"
+	"module-service/domain/common"
+	"module-service/domain/entity"
 )
 
 // ModuleRepository defines the interface for Module entity operations

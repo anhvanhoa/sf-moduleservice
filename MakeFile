@@ -13,11 +13,17 @@ migrate-dev-drop:
 migrate-dev-create:
 	migrate create -ext sql -dir ./migrations -seq $(name)
 
-dev-drop-db:
+dev-docker-drop-db:
 	docker exec -it postgres_container dropdb --force -U postgres moduleservice_db
 
-dev-create-db:
+dev-docker-create-db:
 	docker exec -it postgres_container createdb -U postgres moduleservice_db
+
+dev-create-db:
+	createdb -U postgres moduleservice_db
+
+dev-drop-db:
+	dropdb -U postgres moduleservice_db
 
 build:
 	go build -o app cmd/main.go

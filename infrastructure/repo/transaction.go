@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 
-	repository "github.com/anhvanhoa/module-service/domain/repository"
+	repository "module-service/domain/repository"
 
 	"github.com/go-pg/pg/v10"
 )
@@ -15,13 +15,13 @@ type managerTransaction struct {
 
 var ErrTxContextKey error = errors.New("no transaction in context")
 
+type txContextKey struct{}
+
 func NewManagerTransaction(db *pg.DB) repository.ManagerTransaction {
 	return &managerTransaction{
 		db: db,
 	}
 }
-
-type txContextKey struct{}
 
 func (mt *managerTransaction) RunInTransaction(fn func(ctx context.Context) error) error {
 	tx, err := mt.db.BeginContext(mt.db.Context())

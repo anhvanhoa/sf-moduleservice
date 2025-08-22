@@ -1,7 +1,7 @@
 package argonS
 
 import (
-	argon "github.com/anhvanhoa/module-service/domain/service/argon"
+	argon "module-service/domain/service/argon"
 
 	"github.com/alexedwards/argon2id"
 )

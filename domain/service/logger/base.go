@@ -1,6 +1,6 @@
-package serviceLogger
+package logger
 
-type Logger interface {
+type Log interface {
 	Info(msg string, fields ...any)
 	Debug(msg string, fields ...any)
 	Warn(msg string, fields ...any)

@@ -1,0 +1,172 @@
+syntax = "proto3";
+
+package module.v1;
+
+option go_package = "module/v1;proto";
+
+import "buf/validate/validate.proto";
+
+// Module entity
+message Module {
+  string id = 1;
+  string name = 2 [(buf.validate.field).string.min_len = 1];
+  string description = 3;
+  string status = 4;
+  string created_at = 5;
+  string updated_at = 6;
+}
+
+// ModuleChild entity
+message ModuleChild {
+  string id = 1;
+  string module_id = 2 [(buf.validate.field).string.min_len = 1];
+  string name = 3 [(buf.validate.field).string.min_len = 1];
+  string path = 4 [(buf.validate.field).string.min_len = 1];
+  string method = 5 [(buf.validate.field).string.min_len = 1];
+  bool is_private = 6;
+  string status = 7;
+  string created_at = 8;
+  string updated_at = 9;
+}
+
+// Pagination request
+message PaginationRequest {
+  int32 page = 1 [(buf.validate.field).int32.gte = 1];
+  int32 limit = 2 [(buf.validate.field).int32.gte = 1, (buf.validate.field).int32.lte = 100];
+  string search = 3;
+  string sort_by = 4;
+  string sort_order = 5;
+}
+
+// Pagination response
+message PaginationResponse {
+  int32 page = 1;
+  int32 limit = 2;
+  int32 total = 3;
+  int32 total_pages = 4;
+}
+
+// Create Module
+message CreateModuleRequest {
+  string name = 1 [(buf.validate.field).string.min_len = 1];
+  string description = 2;
+  string status = 3;
+}
+
+message CreateModuleResponse {
+  Module module = 1;
+}
+
+// Get Module
+message GetModuleRequest {
+  string id = 1 [(buf.validate.field).string.min_len = 1];
+}
+
+message GetModuleResponse {
+  Module module = 1;
+}
+
+// List Modules
+message ListModulesRequest {
+  PaginationRequest pagination = 1;
+}
+
+message ListModulesResponse {
+  repeated Module modules = 1;
+  PaginationResponse pagination = 2;
+}
+
+// Update Module
+message UpdateModuleRequest {
+  string id = 1 [(buf.validate.field).string.min_len = 1];
+  string name = 2;
+  string description = 3;
+  string status = 4;
+}
+
+message UpdateModuleResponse {
+  Module module = 1;
+}
+
+// Delete Module
+message DeleteModuleRequest {
+  string id = 1 [(buf.validate.field).string.min_len = 1];
+}
+
+message DeleteModuleResponse {
+  bool success = 1;
+}
+
+// Create ModuleChild
+message CreateModuleChildRequest {
+  string module_id = 1 [(buf.validate.field).string.min_len = 1];
+  string name = 2 [(buf.validate.field).string.min_len = 1];
+  string path = 3 [(buf.validate.field).string.min_len = 1];
+  string method = 4 [(buf.validate.field).string.min_len = 1];
+  bool is_private = 5;
+  string status = 6;
+}
+
+message CreateModuleChildResponse {
+  ModuleChild module_child = 1;
+}
+
+// Get ModuleChild
+message GetModuleChildRequest {
+  string id = 1 [(buf.validate.field).string.min_len = 1];
+}
+
+message GetModuleChildResponse {
+  ModuleChild module_child = 1;
+}
+
+// List ModuleChildren
+message ListModuleChildrenRequest {
+  PaginationRequest pagination = 1;
+  string module_id = 2;
+}
+
+message ListModuleChildrenResponse {
+  repeated ModuleChild module_children = 1;
+  PaginationResponse pagination = 2;
+}
+
+// Update ModuleChild
+message UpdateModuleChildRequest {
+  string id = 1 [(buf.validate.field).string.min_len = 1];
+  string module_id = 2;
+  string name = 3;
+  string path = 4;
+  string method = 5;
+  bool is_private = 6;
+  string status = 7;
+}
+
+message UpdateModuleChildResponse {
+  ModuleChild module_child = 1;
+}
+
+// Delete ModuleChild
+message DeleteModuleChildRequest {
+  string id = 1 [(buf.validate.field).string.min_len = 1];
+}
+
+message DeleteModuleChildResponse {
+  bool success = 1;
+}
+
+service ModuleService {
+  rpc CreateModule(CreateModuleRequest) returns (CreateModuleResponse);
+  rpc GetModule(GetModuleRequest) returns (GetModuleResponse);
+  rpc ListModules(ListModulesRequest) returns (ListModulesResponse);
+  rpc UpdateModule(UpdateModuleRequest) returns (UpdateModuleResponse);
+  rpc DeleteModule(DeleteModuleRequest) returns (DeleteModuleResponse);
+}
+
+service ModuleChildService {
+  rpc CreateModuleChild(CreateModuleChildRequest) returns (CreateModuleChildResponse);
+  rpc GetModuleChild(GetModuleChildRequest) returns (GetModuleChildResponse);
+  rpc ListModuleChildren(ListModuleChildrenRequest) returns (ListModuleChildrenResponse);
+  rpc UpdateModuleChild(UpdateModuleChildRequest) returns (UpdateModuleChildResponse);
+  rpc DeleteModuleChild(DeleteModuleChildRequest) returns (DeleteModuleChildResponse);
+}

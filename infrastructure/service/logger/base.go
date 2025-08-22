@@ -1,25 +1,28 @@
-package pkglog
+package logger
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"time"
 
-	serviceLogger "github.com/anhvanhoa/module-service/domain/service/logger"
-	pkgres "github.com/anhvanhoa/module-service/infrastructure/service/response"
+	l "module-service/domain/service/logger"
 
-	"github.com/gofiber/fiber/v2"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	"gopkg.in/natefinch/lumberjack.v2"
 )
 
 type Logger interface {
-	Log(c *fiber.Ctx, err error) error
-	serviceLogger.Logger
+	LogGRPC(ctx context.Context, method string, req any, resp any, err error, duration time.Duration)
+	LogGRPCRequest(ctx context.Context, method string, req any)
+	LogGRPCResponse(ctx context.Context, method string, resp any, err error, duration time.Duration)
+	l.Log
 }
 
-type logger struct {
+type log struct {
 	Logger *zap.Logger
 }
 
@@ -70,7 +73,7 @@ func InitLogger(config *lumberjack.Logger, logLevel zapcore.Level, logFile bool)
 	// Kết hợp nhiều writer
 	core := zapcore.NewTee(coreLogs...)
 
-	return &logger{
+	return &log{
 		Logger: zap.New(
 			core,
 			zap.AddCaller(),
@@ -94,7 +97,7 @@ func convertToZapFields(fields ...any) []zap.Field {
 }
 
 // Các hàm tiện ích
-func (l *logger) Info(msg string, fields ...any) {
+func (l *log) Info(msg string, fields ...any) {
 	zapFields := convertToZapFields(fields...)
 	if len(zapFields) > 0 {
 		zapFields = append(zapFields, zap.String("info", msg))
@@ -102,7 +105,7 @@ func (l *logger) Info(msg string, fields ...any) {
 	l.Logger.Info(msg, zapFields...)
 }
 
-func (l *logger) Debug(msg string, fields ...any) {
+func (l *log) Debug(msg string, fields ...any) {
 	zapFields := convertToZapFields(fields...)
 	if len(zapFields) > 0 {
 		zapFields = append(zapFields, zap.String("debug", msg))
@@ -110,7 +113,7 @@ func (l *logger) Debug(msg string, fields ...any) {
 	l.Logger.Debug(msg, zapFields...)
 }
 
-func (l *logger) Warn(msg string, fields ...any) {
+func (l *log) Warn(msg string, fields ...any) {
 	zapFields := convertToZapFields(fields...)
 	if len(zapFields) > 0 {
 		zapFields = append(zapFields, zap.String("warning", msg))
@@ -118,7 +121,7 @@ func (l *logger) Warn(msg string, fields ...any) {
 	l.Logger.Warn(msg, zapFields...)
 }
 
-func (l *logger) Error(msg string, fields ...any) {
+func (l *log) Error(msg string, fields ...any) {
 	zapFields := convertToZapFields(fields...)
 	if len(zapFields) > 0 {
 		zapFields = append(zapFields, zap.String("error", msg))
@@ -126,7 +129,7 @@ func (l *logger) Error(msg string, fields ...any) {
 	l.Logger.Error(msg, zapFields...)
 }
 
-func (l *logger) Fatal(msg string, fields ...any) {
+func (l *log) Fatal(msg string, fields ...any) {
 	zapFields := convertToZapFields(fields...)
 	if len(zapFields) > 0 {
 		zapFields = append(zapFields, zap.String("fatal", msg))
@@ -134,26 +137,84 @@ func (l *logger) Fatal(msg string, fields ...any) {
 	l.Logger.Fatal(msg, zapFields...)
 }
 
-func (l *logger) Log(c *fiber.Ctx, err error) error {
-	l.Error(
-		err.Error(),
-		zap.String("path", c.Path()),
-		zap.String("method", c.Method()),
-		zap.String("ip", c.IP()),
-		zap.String("user-agent", c.Get("User-Agent")),
-	)
-	var er error
-	switch e := err.(type) {
-	case *pkgres.ErrorApp:
-		er = c.Status(e.GetCode()).JSON(e)
-	case *fiber.Error:
-		er = c.Status(e.Code).JSON(fiber.Map{
-			"Message": e.Message,
-		})
-	default:
-		er = c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"Message": e.Error(),
-		})
+func (l *log) LogGRPC(ctx context.Context, method string, req any, resp any, err error, duration time.Duration) {
+	statusCode := codes.OK
+	if err != nil {
+		if st, ok := status.FromError(err); ok {
+			statusCode = st.Code()
+		} else {
+			statusCode = codes.Internal
+		}
 	}
-	return er
+
+	maskedReq := maskSensitiveData(req)
+	maskedResp := maskSensitiveData(resp)
+
+	fields := []zap.Field{
+		zap.String("method", method),
+		zap.String("status", statusCode.String()),
+		zap.Duration("duration", duration),
+		zap.Any("request", maskedReq),
+		zap.Any("response", maskedResp),
+	}
+
+	if deadline, ok := ctx.Deadline(); ok {
+		fields = append(fields, zap.Time("deadline", deadline))
+	}
+
+	if err != nil {
+		fields = append(fields, zap.Error(err))
+		l.Logger.Error("gRPC call completed with error", fields...)
+	} else {
+		l.Logger.Info("gRPC call completed successfully", fields...)
+	}
+}
+
+func (l *log) LogGRPCRequest(ctx context.Context, method string, req any) {
+	maskedReq := maskSensitiveData(req)
+
+	fields := []zap.Field{
+		zap.String("method", method),
+		zap.Any("request", maskedReq),
+	}
+
+	if deadline, ok := ctx.Deadline(); ok {
+		fields = append(fields, zap.Time("deadline", deadline))
+	}
+
+	l.Logger.Info("gRPC request received", fields...)
+}
+
+func (l *log) LogGRPCResponse(ctx context.Context, method string, resp any, err error, duration time.Duration) {
+	statusCode := codes.OK
+	if err != nil {
+		if st, ok := status.FromError(err); ok {
+			statusCode = st.Code()
+		} else {
+			statusCode = codes.Internal
+		}
+	}
+
+	maskedResp := maskSensitiveData(resp)
+
+	fields := []zap.Field{
+		zap.String("method", method),
+		zap.String("status", statusCode.String()),
+		zap.Duration("duration", duration),
+		zap.Any("response", maskedResp),
+	}
+
+	if err != nil {
+		fields = append(fields, zap.Error(err))
+		l.Logger.Error("gRPC response sent with error", fields...)
+	} else {
+		l.Logger.Info("gRPC response sent successfully", fields...)
+	}
+}
+
+func maskSensitiveData(data any) any {
+	if data == nil {
+		return nil
+	}
+	return "[MASKED]"
 }
