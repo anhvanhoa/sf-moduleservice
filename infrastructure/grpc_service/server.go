@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net"
 
+	"module-service/bootstrap"
 	pkglog "module-service/infrastructure/service/logger"
 	proto "module-service/proto/gen/module/v1"
 
@@ -21,7 +22,7 @@ type GRPCServer struct {
 }
 
 func NewGRPCServer(
-	port string,
+	env *bootstrap.Env,
 	log pkglog.Logger,
 	moduleService proto.ModuleServiceServer,
 	moduleChildService proto.ModuleChildServiceServer,
@@ -40,11 +41,14 @@ func NewGRPCServer(
 	proto.RegisterModuleServiceServer(server, moduleService)
 	proto.RegisterModuleChildServiceServer(server, moduleChildService)
 
-	reflection.Register(server)
+	if !env.IsProduction() {
+		reflection.Register(server)
+		log.Info("Reflection enabled")
+	}
 
 	return &GRPCServer{
 		server: server,
-		port:   port,
+		port:   env.PORT_GRPC,
 		log:    log,
 	}
 }

@@ -20,7 +20,7 @@ func StartGRPCServer() {
 	db := app.DB
 	moduleService := moduleservice.NewModuleService(db, env)
 	moduleChildService := modulechildservice.NewModuleChildService(db, env)
-	grpcSrv := grpcservice.NewGRPCServer(env.PORT_GRPC, log, moduleService, moduleChildService)
+	grpcSrv := grpcservice.NewGRPCServer(env, log, moduleService, moduleChildService)
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	if err := grpcSrv.Start(ctx); err != nil {
