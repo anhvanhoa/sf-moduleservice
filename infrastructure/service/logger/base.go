@@ -3,10 +3,9 @@ package logger
 import (
 	"context"
 	"fmt"
+	"module-service/domain/service/logger"
 	"os"
 	"time"
-
-	l "module-service/domain/service/logger"
 
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
@@ -14,13 +13,6 @@ import (
 	"google.golang.org/grpc/status"
 	"gopkg.in/natefinch/lumberjack.v2"
 )
-
-type Logger interface {
-	LogGRPC(ctx context.Context, method string, req any, resp any, err error, duration time.Duration)
-	LogGRPCRequest(ctx context.Context, method string, req any)
-	LogGRPCResponse(ctx context.Context, method string, resp any, err error, duration time.Duration)
-	l.Log
-}
 
 type log struct {
 	Logger *zap.Logger
@@ -41,7 +33,7 @@ func NewConfig() *lumberjack.Logger {
 }
 
 // InitLogger thiết lập Logger với Lumberjack và Zap
-func InitLogger(config *lumberjack.Logger, logLevel zapcore.Level, logFile bool) Logger {
+func InitLogger(config *lumberjack.Logger, logLevel zapcore.Level, logFile bool) logger.Log {
 	encoderConfig := zapcore.EncoderConfig{
 		LevelKey:         "level",
 		MessageKey:       "message",

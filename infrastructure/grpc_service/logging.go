@@ -2,14 +2,13 @@ package grpcservice
 
 import (
 	"context"
+	loggerI "module-service/domain/service/logger"
 	"time"
-
-	"module-service/infrastructure/service/logger"
 
 	"google.golang.org/grpc"
 )
 
-func LoggingInterceptor(log logger.Logger) grpc.UnaryServerInterceptor {
+func LoggingInterceptor(log loggerI.Log) grpc.UnaryServerInterceptor {
 	return func(ctx context.Context, req any, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (any, error) {
 		start := time.Now()
 		log.LogGRPCRequest(ctx, info.FullMethod, req)

@@ -6,7 +6,7 @@ import (
 	"net"
 
 	"module-service/bootstrap"
-	pkglog "module-service/infrastructure/service/logger"
+	"module-service/domain/service/logger"
 	proto "module-service/proto/gen/module/v1"
 
 	"buf.build/go/protovalidate"
@@ -18,12 +18,12 @@ import (
 type GRPCServer struct {
 	server *grpc.Server
 	port   string
-	log    pkglog.Logger
+	log    logger.Log
 }
 
 func NewGRPCServer(
 	env *bootstrap.Env,
-	log pkglog.Logger,
+	log logger.Log,
 	moduleService proto.ModuleServiceServer,
 	moduleChildService proto.ModuleChildServiceServer,
 ) *GRPCServer {
