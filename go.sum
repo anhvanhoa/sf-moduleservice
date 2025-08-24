@@ -10,6 +10,8 @@ github.com/anhvanhoa/sf-proto v1.0.0 h1:0Sh+ydrpIDxvDwKmpzn53hCpLgfRPDbq3cWxC+ph
 github.com/anhvanhoa/sf-proto v1.0.0/go.mod h1:CQ7MbEu4NIiPPbidqNJuvHegDs3kq1L8klTBnZxma3w=
 github.com/anhvanhoa/sf-proto v1.0.1 h1:228s0VikCoBvpUbVGDFsMmMzr9510OKf98QtSbxQQC4=
 github.com/anhvanhoa/sf-proto v1.0.1/go.mod h1:CQ7MbEu4NIiPPbidqNJuvHegDs3kq1L8klTBnZxma3w=
+github.com/anhvanhoa/sf-proto v1.1.1 h1:vQsd2hmCtUs4n472I6prOG5tOcltQnPCWxNov/E4G5w=
+github.com/anhvanhoa/sf-proto v1.1.1/go.mod h1:CQ7MbEu4NIiPPbidqNJuvHegDs3kq1L8klTBnZxma3w=
 github.com/antlr4-go/antlr/v4 v4.13.0 h1:lxCg3LAv+EUK6t1i0y1V6/SLeUi0eKEKdhQAlS8TVTI=
 github.com/antlr4-go/antlr/v4 v4.13.0/go.mod h1:pfChB/xh/Unjila75QW7+VU4TSnWnnk9UTnmpPaOR2g=
 github.com/bsm/ginkgo/v2 v2.12.0 h1:Ny8MWAHyOepLGlLKYmXG4IEkioBysk6GpaRTLC8zwWs=

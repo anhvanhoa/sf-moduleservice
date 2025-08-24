@@ -9,6 +9,7 @@ import (
 	"module-service/domain/service/logger"
 
 	proto_module "github.com/anhvanhoa/sf-proto/gen/module/v1"
+	proto_module_child "github.com/anhvanhoa/sf-proto/gen/module_child/v1"
 
 	"buf.build/go/protovalidate"
 	protovalidate_middleware "github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/protovalidate"
@@ -26,7 +27,7 @@ func NewGRPCServer(
 	env *bootstrap.Env,
 	log logger.Log,
 	moduleService proto_module.ModuleServiceServer,
-	moduleChildService proto_module.ModuleChildServiceServer,
+	moduleChildService proto_module_child.ModuleChildServiceServer,
 ) *GRPCServer {
 	validator, err := protovalidate.New()
 	if err != nil {
@@ -40,7 +41,7 @@ func NewGRPCServer(
 	)
 
 	proto_module.RegisterModuleServiceServer(server, moduleService)
-	proto_module.RegisterModuleChildServiceServer(server, moduleChildService)
+	proto_module_child.RegisterModuleChildServiceServer(server, moduleChildService)
 
 	if !env.IsProduction() {
 		reflection.Register(server)

@@ -19,7 +19,7 @@ require (
 
 require (
 	cel.dev/expr v0.23.1 // indirect
-	github.com/anhvanhoa/sf-proto v1.0.1 // indirect
+	github.com/anhvanhoa/sf-proto v1.1.1 // indirect
 	github.com/antlr4-go/antlr/v4 v4.13.0 // indirect
 	github.com/google/cel-go v0.25.0 // indirect
 	github.com/onsi/ginkgo v1.16.4 // indirect

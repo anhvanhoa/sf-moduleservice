@@ -4,19 +4,19 @@ import (
 	"context"
 	"time"
 
-	proto_module "github.com/anhvanhoa/sf-proto/gen/module/v1"
+	proto_module_child "github.com/anhvanhoa/sf-proto/gen/module_child/v1"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
-func (s *moduleChildService) GetModuleChild(ctx context.Context, req *proto_module.GetModuleChildRequest) (*proto_module.GetModuleChildResponse, error) {
+func (s *moduleChildService) GetModuleChild(ctx context.Context, req *proto_module_child.GetModuleChildRequest) (*proto_module_child.GetModuleChildResponse, error) {
 	moduleChild, err := s.getChildUc.GetByID(ctx, req.Id)
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	moduleChildProto := &proto_module.ModuleChild{
+	moduleChildProto := &proto_module_child.ModuleChild{
 		Id:        moduleChild.ID,
 		ModuleId:  moduleChild.ModuleID,
 		Name:      moduleChild.Name,
@@ -31,7 +31,7 @@ func (s *moduleChildService) GetModuleChild(ctx context.Context, req *proto_modu
 		moduleChildProto.UpdatedAt = moduleChild.UpdatedAt.Format(time.RFC3339)
 	}
 
-	return &proto_module.GetModuleChildResponse{
+	return &proto_module_child.GetModuleChildResponse{
 		ModuleChild: moduleChildProto,
 	}, nil
 }

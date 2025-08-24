@@ -6,13 +6,13 @@ import (
 	"module-service/domain/entity"
 	"time"
 
-	proto_module "github.com/anhvanhoa/sf-proto/gen/module/v1"
+	proto_module_child "github.com/anhvanhoa/sf-proto/gen/module_child/v1"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
-func (s *moduleChildService) UpdateModuleChild(ctx context.Context, req *proto_module.UpdateModuleChildRequest) (*proto_module.UpdateModuleChildResponse, error) {
+func (s *moduleChildService) UpdateModuleChild(ctx context.Context, req *proto_module_child.UpdateModuleChildRequest) (*proto_module_child.UpdateModuleChildResponse, error) {
 	moduleChild := &entity.ModuleChild{
 		ID:        req.Id,
 		ModuleID:  req.ModuleId,
@@ -34,7 +34,7 @@ func (s *moduleChildService) UpdateModuleChild(ctx context.Context, req *proto_m
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	moduleChildProto := &proto_module.ModuleChild{
+	moduleChildProto := &proto_module_child.ModuleChild{
 		Id:        updatedModuleChild.ID,
 		ModuleId:  updatedModuleChild.ModuleID,
 		Name:      updatedModuleChild.Name,
@@ -49,7 +49,7 @@ func (s *moduleChildService) UpdateModuleChild(ctx context.Context, req *proto_m
 		moduleChildProto.UpdatedAt = updatedModuleChild.UpdatedAt.Format(time.RFC3339)
 	}
 
-	return &proto_module.UpdateModuleChildResponse{
+	return &proto_module_child.UpdateModuleChildResponse{
 		ModuleChild: moduleChildProto,
 	}, nil
 }

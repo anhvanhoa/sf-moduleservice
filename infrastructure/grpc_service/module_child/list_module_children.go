@@ -5,13 +5,13 @@ import (
 	"module-service/domain/common"
 	"time"
 
-	proto_module "github.com/anhvanhoa/sf-proto/gen/module/v1"
+	proto_module_child "github.com/anhvanhoa/sf-proto/gen/module_child/v1"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
-func (s *moduleChildService) ListModuleChildren(ctx context.Context, req *proto_module.ListModuleChildrenRequest) (*proto_module.ListModuleChildrenResponse, error) {
+func (s *moduleChildService) ListModuleChildren(ctx context.Context, req *proto_module_child.ListModuleChildrenRequest) (*proto_module_child.ListModuleChildrenResponse, error) {
 	pagination := &common.Pagination{
 		Page:     int(req.Pagination.Page),
 		PageSize: int(req.Pagination.Limit),
@@ -22,9 +22,9 @@ func (s *moduleChildService) ListModuleChildren(ctx context.Context, req *proto_
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	moduleChildProtos := make([]*proto_module.ModuleChild, len(moduleChildren))
+	moduleChildProtos := make([]*proto_module_child.ModuleChild, len(moduleChildren))
 	for i, moduleChild := range moduleChildren {
-		moduleChildProto := &proto_module.ModuleChild{
+		moduleChildProto := &proto_module_child.ModuleChild{
 			Id:        moduleChild.ID,
 			ModuleId:  moduleChild.ModuleID,
 			Name:      moduleChild.Name,
@@ -44,9 +44,9 @@ func (s *moduleChildService) ListModuleChildren(ctx context.Context, req *proto_
 
 	totalPages := (int(total) + pagination.PageSize - 1) / pagination.PageSize
 
-	return &proto_module.ListModuleChildrenResponse{
+	return &proto_module_child.ListModuleChildrenResponse{
 		ModuleChildren: moduleChildProtos,
-		Pagination: &proto_module.PaginationResponse{
+		Pagination: &proto_module_child.PaginationResponse{
 			Page:       int32(pagination.Page),
 			Limit:      int32(pagination.PageSize),
 			Total:      int32(total),
