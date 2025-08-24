@@ -4,13 +4,14 @@ import (
 	"context"
 	"module-service/domain/common"
 	"module-service/domain/entity"
-	proto "module-service/proto/gen/module/v1"
+
+	proto_module "github.com/anhvanhoa/sf-proto/gen/module/v1"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
-func (s *moduleService) CreateModule(ctx context.Context, req *proto.CreateModuleRequest) (*proto.CreateModuleResponse, error) {
+func (s *moduleService) CreateModule(ctx context.Context, req *proto_module.CreateModuleRequest) (*proto_module.CreateModuleResponse, error) {
 	module := entity.Module{
 		Name:        req.Name,
 		Description: req.Description,
@@ -20,8 +21,8 @@ func (s *moduleService) CreateModule(ctx context.Context, req *proto.CreateModul
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
-	return &proto.CreateModuleResponse{
-		Module: &proto.Module{
+	return &proto_module.CreateModuleResponse{
+		Module: &proto_module.Module{
 			Id:          module.ID,
 			Name:        module.Name,
 			Description: module.Description,

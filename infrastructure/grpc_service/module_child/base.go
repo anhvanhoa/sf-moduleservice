@@ -5,13 +5,13 @@ import (
 	"module-service/domain/usecase"
 	"module-service/infrastructure/repo"
 
-	proto "module-service/proto/gen/module/v1"
+	proto_module "github.com/anhvanhoa/sf-proto/gen/module/v1"
 
 	"github.com/go-pg/pg/v10"
 )
 
 type moduleChildService struct {
-	proto.UnsafeModuleChildServiceServer
+	proto_module.UnsafeModuleChildServiceServer
 	createChildUc  usecase.CreateModuleChildUsecase
 	getChildUc     usecase.GetModuleChildUsecase
 	listChildrenUc usecase.ListModuleChildrenUsecase
@@ -19,7 +19,7 @@ type moduleChildService struct {
 	deleteChildUc  usecase.DeleteModuleChildUsecase
 }
 
-func NewModuleChildService(db *pg.DB, env *bootstrap.Env) proto.ModuleChildServiceServer {
+func NewModuleChildService(db *pg.DB, env *bootstrap.Env) proto_module.ModuleChildServiceServer {
 
 	moduleChildRepo := repo.NewModuleChildRepository(db)
 

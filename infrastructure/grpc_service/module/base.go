@@ -6,13 +6,13 @@ import (
 	"module-service/infrastructure/repo"
 	goid "module-service/infrastructure/service/goid"
 
-	proto "module-service/proto/gen/module/v1"
+	proto_module "github.com/anhvanhoa/sf-proto/gen/module/v1"
 
 	"github.com/go-pg/pg/v10"
 )
 
 type moduleService struct {
-	proto.UnsafeModuleServiceServer
+	proto_module.UnsafeModuleServiceServer
 	createUc usecase.CreateModuleUsecase
 	getUc    usecase.GetModuleUsecase
 	listUc   usecase.ListModulesUsecase
@@ -20,7 +20,7 @@ type moduleService struct {
 	deleteUc usecase.DeleteModuleUsecase
 }
 
-func NewModuleService(db *pg.DB, env *bootstrap.Env) proto.ModuleServiceServer {
+func NewModuleService(db *pg.DB, env *bootstrap.Env) proto_module.ModuleServiceServer {
 
 	moduleRepo := repo.NewModuleRepository(db)
 

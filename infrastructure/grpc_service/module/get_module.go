@@ -2,20 +2,21 @@ package moduleservice
 
 import (
 	"context"
-	proto "module-service/proto/gen/module/v1"
 	"time"
+
+	proto_module "github.com/anhvanhoa/sf-proto/gen/module/v1"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
-func (s *moduleService) GetModule(ctx context.Context, req *proto.GetModuleRequest) (*proto.GetModuleResponse, error) {
+func (s *moduleService) GetModule(ctx context.Context, req *proto_module.GetModuleRequest) (*proto_module.GetModuleResponse, error) {
 	module, err := s.getUc.GetByID(ctx, req.Id)
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	moduleProto := &proto.Module{
+	moduleProto := &proto_module.Module{
 		Id:          module.ID,
 		Name:        module.Name,
 		Description: module.Description,
@@ -27,7 +28,7 @@ func (s *moduleService) GetModule(ctx context.Context, req *proto.GetModuleReque
 		moduleProto.UpdatedAt = module.UpdatedAt.Format(time.RFC3339)
 	}
 
-	return &proto.GetModuleResponse{
+	return &proto_module.GetModuleResponse{
 		Module: moduleProto,
 	}, nil
 }
