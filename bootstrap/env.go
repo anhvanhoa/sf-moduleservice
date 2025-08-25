@@ -9,13 +9,6 @@ import (
 	"github.com/spf13/viper"
 )
 
-type jwtSecret struct {
-	Access  string
-	Refresh string
-	Verify  string
-	Forgot  string
-}
-
 type dbCache struct {
 	Addr        string
 	DB          int
@@ -28,23 +21,13 @@ type dbCache struct {
 
 type Env struct {
 	MODE_ENV string
-
-	URL_DB string
-
+	URL_DB   string
 	NAME_APP string
-	PORT_APP string
-	HOST_APP string
 
 	PORT_GRPC string
 	HOST_GRPC string
 
 	DB_CACHE *dbCache
-
-	SECRET_OTP string
-
-	JWT_SECRET *jwtSecret
-
-	FRONTEND_URL string
 }
 
 func NewEnv(env any) {
