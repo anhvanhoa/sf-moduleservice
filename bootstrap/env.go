@@ -22,10 +22,12 @@ type dbCache struct {
 type Env struct {
 	MODE_ENV string
 	URL_DB   string
-	NAME_APP string
 
-	PORT_GRPC string
-	HOST_GRPC string
+	NAME_SERVICE   string
+	PORT_GRPC      int
+	HOST_GRPC      string
+	INTERVAL_CHECK string
+	TIMEOUT_CHECK  string
 
 	DB_CACHE *dbCache
 }
