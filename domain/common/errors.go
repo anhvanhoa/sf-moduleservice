@@ -1,24 +1,22 @@
 package common
 
-import (
-	se "module-service/domain/service/error"
+import "errors"
+
+var (
+	ErrModuleNotFound          = errors.New("Không tìm thấy module")
+	ErrInvalidModuleName       = errors.New("Tên module không hợp lệ")
+	ErrInvalidDescription      = errors.New("Mô tả module không hợp lệ")
+	ErrInvalidStatus           = errors.New("Trạng thái module không hợp lệ")
+	ErrInvalidModule           = errors.New("Module không hợp lệ")
+	ErrModuleNameAlreadyExists = errors.New("Tên module đã tồn tại")
 )
 
 var (
-	ErrModuleNotFound          = se.NewErr("Không tìm thấy module")
-	ErrInvalidModuleName       = se.NewErr("Tên module không hợp lệ")
-	ErrInvalidDescription      = se.NewErr("Mô tả module không hợp lệ")
-	ErrInvalidStatus           = se.NewErr("Trạng thái module không hợp lệ")
-	ErrInvalidModule           = se.NewErr("Module không hợp lệ")
-	ErrModuleNameAlreadyExists = se.NewErr("Tên module đã tồn tại")
-)
-
-var (
-	ErrModuleChildNotFound        = se.NewErr("Không tìm thấy module con")
-	ErrInvalidModuleChildID       = se.NewErr("ID module con không hợp lệ")
-	ErrInvalidModuleChildName     = se.NewErr("Tên module con không hợp lệ")
-	ErrInvalidPath                = se.NewErr("Đường dẫn không hợp lệ")
-	ErrInvalidMethod              = se.NewErr("Phương thức không hợp lệ")
-	ErrInvalidModuleChild         = se.NewErr("Module con không hợp lệ")
-	ErrPathAndMethodAlreadyExists = se.NewErr("Đường dẫn và phương thức đã tồn tại")
+	ErrModuleChildNotFound        = errors.New("Không tìm thấy module con")
+	ErrInvalidModuleChildID       = errors.New("ID module con không hợp lệ")
+	ErrInvalidModuleChildName     = errors.New("Tên module con không hợp lệ")
+	ErrInvalidPath                = errors.New("Đường dẫn không hợp lệ")
+	ErrInvalidMethod              = errors.New("Phương thức không hợp lệ")
+	ErrInvalidModuleChild         = errors.New("Module con không hợp lệ")
+	ErrPathAndMethodAlreadyExists = errors.New("Đường dẫn và phương thức đã tồn tại")
 )

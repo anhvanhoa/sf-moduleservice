@@ -14,17 +14,14 @@ type moduleRepository struct {
 	db *pg.DB
 }
 
-// NewModuleRepository creates a new instance of ModuleRepository
 func NewModuleRepository(db *pg.DB) repository.ModuleRepository {
 	return &moduleRepository{
 		db: db,
 	}
 }
 
-// Create operations
 func (r *moduleRepository) Create(ctx context.Context, module *entity.Module) error {
-	db := getTx(ctx, r.db)
-	_, err := db.Model(module).Insert()
+	_, err := r.db.Model(module).Insert()
 	return err
 }
 
@@ -32,16 +29,13 @@ func (r *moduleRepository) CreateMany(ctx context.Context, modules []*entity.Mod
 	if len(modules) == 0 {
 		return nil
 	}
-	db := getTx(ctx, r.db)
-	_, err := db.Model(&modules).Insert()
+	_, err := r.db.Model(&modules).Insert()
 	return err
 }
 
-// Read operations
 func (r *moduleRepository) GetByID(ctx context.Context, id string) (*entity.Module, error) {
 	var module entity.Module
-	db := getTx(ctx, r.db)
-	err := db.Model(&module).Where("id = ?", id).Select()
+	err := r.db.Model(&module).Where("id = ?", id).Select()
 	if err != nil {
 		if err == pg.ErrNoRows {
 			return nil, nil
@@ -53,8 +47,7 @@ func (r *moduleRepository) GetByID(ctx context.Context, id string) (*entity.Modu
 
 func (r *moduleRepository) GetByName(ctx context.Context, name string) (*entity.Module, error) {
 	var module entity.Module
-	db := getTx(ctx, r.db)
-	err := db.Model(&module).Where("name = ?", name).Select()
+	err := r.db.Model(&module).Where("name = ?", name).Select()
 	if err != nil {
 		if err == pg.ErrNoRows {
 			return nil, nil
@@ -66,15 +59,13 @@ func (r *moduleRepository) GetByName(ctx context.Context, name string) (*entity.
 
 func (r *moduleRepository) GetByStatus(ctx context.Context, status common.Status) ([]*entity.Module, error) {
 	var modules []*entity.Module
-	db := getTx(ctx, r.db)
-	err := db.Model(&modules).Where("status = ?", status).Select()
+	err := r.db.Model(&modules).Where("status = ?", status).Select()
 	return modules, err
 }
 
 func (r *moduleRepository) GetAll(ctx context.Context) ([]*entity.Module, error) {
 	var modules []*entity.Module
-	db := getTx(ctx, r.db)
-	err := db.Model(&modules).Select()
+	err := r.db.Model(&modules).Select()
 	return modules, err
 }
 
@@ -82,17 +73,13 @@ func (r *moduleRepository) GetWithPagination(ctx context.Context, pagination *co
 	var modules []*entity.Module
 	var total int64
 
-	db := getTx(ctx, r.db)
-
-	// Get total count
-	count, err := db.Model(&modules).Count()
+	count, err := r.db.Model(&modules).Count()
 	if err != nil {
 		return nil, 0, err
 	}
 	total = int64(count)
 
-	// Get paginated results
-	query := db.Model(&modules)
+	query := r.db.Model(&modules)
 	if pagination != nil {
 		if pagination.PageSize > 0 {
 			query = query.Limit(pagination.PageSize)
@@ -108,27 +95,22 @@ func (r *moduleRepository) GetWithPagination(ctx context.Context, pagination *co
 }
 
 func (r *moduleRepository) ExistsByID(ctx context.Context, id string) (bool, error) {
-	db := getTx(ctx, r.db)
-	exists, err := db.Model((*entity.Module)(nil)).Where("id = ?", id).Exists()
+	exists, err := r.db.Model((*entity.Module)(nil)).Where("id = ?", id).Exists()
 	return exists, err
 }
 
 func (r *moduleRepository) ExistsByName(ctx context.Context, name string) (bool, error) {
-	db := getTx(ctx, r.db)
-	exists, err := db.Model((*entity.Module)(nil)).Where("name = ?", name).Exists()
+	exists, err := r.db.Model((*entity.Module)(nil)).Where("name = ?", name).Exists()
 	return exists, err
 }
 
-// Update operations
 func (r *moduleRepository) Update(ctx context.Context, module *entity.Module) error {
-	db := getTx(ctx, r.db)
-	_, err := db.Model(module).WherePK().Update()
+	_, err := r.db.Model(module).WherePK().Update()
 	return err
 }
 
 func (r *moduleRepository) UpdateStatus(ctx context.Context, id string, status common.Status) error {
-	db := getTx(ctx, r.db)
-	_, err := db.Model((*entity.Module)(nil)).
+	_, err := r.db.Model((*entity.Module)(nil)).
 		Set("status = ?", status).
 		Where("id = ?", id).
 		Update()
@@ -136,8 +118,7 @@ func (r *moduleRepository) UpdateStatus(ctx context.Context, id string, status c
 }
 
 func (r *moduleRepository) UpdateName(ctx context.Context, id string, name string) error {
-	db := getTx(ctx, r.db)
-	_, err := db.Model((*entity.Module)(nil)).
+	_, err := r.db.Model((*entity.Module)(nil)).
 		Set("name = ?", name).
 		Where("id = ?", id).
 		Update()
@@ -145,47 +126,39 @@ func (r *moduleRepository) UpdateName(ctx context.Context, id string, name strin
 }
 
 func (r *moduleRepository) UpdateDescription(ctx context.Context, id string, description string) error {
-	db := getTx(ctx, r.db)
-	_, err := db.Model((*entity.Module)(nil)).
+	_, err := r.db.Model((*entity.Module)(nil)).
 		Set("description = ?", description).
 		Where("id = ?", id).
 		Update()
 	return err
 }
 
-// Delete operations
 func (r *moduleRepository) DeleteByID(ctx context.Context, id string) error {
-	db := getTx(ctx, r.db)
-	_, err := db.Model((*entity.Module)(nil)).Where("id = ?", id).Delete()
+	_, err := r.db.Model((*entity.Module)(nil)).Where("id = ?", id).Delete()
 	return err
 }
 
 func (r *moduleRepository) DeleteByStatus(ctx context.Context, status common.Status) error {
-	db := getTx(ctx, r.db)
-	_, err := db.Model((*entity.Module)(nil)).Where("status = ?", status).Delete()
+	_, err := r.db.Model((*entity.Module)(nil)).Where("status = ?", status).Delete()
 	return err
 }
 
 func (r *moduleRepository) SoftDeleteByID(ctx context.Context, id string) error {
-	db := getTx(ctx, r.db)
-	_, err := db.Model((*entity.Module)(nil)).
+	_, err := r.db.Model((*entity.Module)(nil)).
 		Set("status = ?", common.StatusInactive).
 		Where("id = ?", id).
 		Update()
 	return err
 }
 
-// Search operations
 func (r *moduleRepository) SearchByName(ctx context.Context, name string) ([]*entity.Module, error) {
 	var modules []*entity.Module
-	db := getTx(ctx, r.db)
-	err := db.Model(&modules).Where("name ILIKE ?", "%"+name+"%").Select()
+	err := r.db.Model(&modules).Where("name ILIKE ?", "%"+name+"%").Select()
 	return modules, err
 }
 
 func (r *moduleRepository) SearchByDescription(ctx context.Context, description string) ([]*entity.Module, error) {
 	var modules []*entity.Module
-	db := getTx(ctx, r.db)
-	err := db.Model(&modules).Where("description ILIKE ?", "%"+description+"%").Select()
+	err := r.db.Model(&modules).Where("description ILIKE ?", "%"+description+"%").Select()
 	return modules, err
 }

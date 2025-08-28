@@ -1,12 +1,9 @@
 package bootstrap
 
 import (
-	"log"
-	"os"
-	"path/filepath"
 	"strings"
 
-	"github.com/spf13/viper"
+	"github.com/anhvanhoa/service-core/boostrap/config"
 )
 
 type dbCache struct {
@@ -20,7 +17,7 @@ type dbCache struct {
 }
 
 type Env struct {
-	MODE_ENV string
+	NODE_ENV string
 	URL_DB   string
 
 	NAME_SERVICE   string
@@ -33,30 +30,15 @@ type Env struct {
 }
 
 func NewEnv(env any) {
-	absPath, err := filepath.Abs("./")
-	if err != nil {
-		log.Fatal("Error getting the absolute path:", err)
-	}
-
-	mode := os.Getenv("ENV_MODE")
-	viper.SetConfigType("yaml")
-	if mode == "production" {
-		viper.SetConfigName("prod.config")
+	sc := config.DefaultSettingsConfig()
+	if sc.IsProduction() {
+		sc.SetFile("prod.config")
 	} else {
-		viper.SetConfigName("dev.config")
+		sc.SetFile("dev.config")
 	}
-	viper.AddConfigPath(absPath)
-	err = viper.ReadInConfig()
-	if err != nil {
-		panic("Error reading config file, " + err.Error())
-	}
-
-	err = viper.UnmarshalExact(env)
-	if err != nil {
-		panic("Error unmarshalling config file, " + err.Error())
-	}
+	config.NewConfig(sc, env)
 }
 
 func (env *Env) IsProduction() bool {
-	return strings.ToLower(env.MODE_ENV) == "production"
+	return strings.ToLower(env.NODE_ENV) == "production"
 }

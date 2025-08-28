@@ -1,11 +1,10 @@
 package moduleservice
 
 import (
-	"module-service/bootstrap"
 	"module-service/domain/usecase"
 	"module-service/infrastructure/repo"
-	goid "module-service/infrastructure/service/goid"
 
+	"github.com/anhvanhoa/service-core/domain/goid"
 	proto_module "github.com/anhvanhoa/sf-proto/gen/module/v1"
 
 	"github.com/go-pg/pg/v10"
@@ -20,12 +19,11 @@ type moduleService struct {
 	deleteUc usecase.DeleteModuleUsecase
 }
 
-func NewModuleService(db *pg.DB, env *bootstrap.Env) proto_module.ModuleServiceServer {
-
+func NewModuleService(db *pg.DB) proto_module.ModuleServiceServer {
 	moduleRepo := repo.NewModuleRepository(db)
-
+	uuid := goid.NewGoId().UUID()
 	return &moduleService{
-		createUc: usecase.NewCreateModule(moduleRepo, goid.NewGoId()),
+		createUc: usecase.NewCreateModule(moduleRepo, uuid),
 		getUc:    usecase.NewGetModuleImpl(moduleRepo),
 		listUc:   usecase.NewListModulesImpl(moduleRepo),
 		updateUc: usecase.NewUpdateModuleImpl(moduleRepo),

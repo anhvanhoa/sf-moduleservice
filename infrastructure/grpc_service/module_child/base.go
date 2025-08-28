@@ -1,7 +1,6 @@
 package modulechildservice
 
 import (
-	"module-service/bootstrap"
 	"module-service/domain/usecase"
 	"module-service/infrastructure/repo"
 
@@ -19,10 +18,8 @@ type moduleChildService struct {
 	deleteChildUc  usecase.DeleteModuleChildUsecase
 }
 
-func NewModuleChildService(db *pg.DB, env *bootstrap.Env) proto_module_child.ModuleChildServiceServer {
-
+func NewModuleChildService(db *pg.DB) proto_module_child.ModuleChildServiceServer {
 	moduleChildRepo := repo.NewModuleChildRepository(db)
-
 	return &moduleChildService{
 		createChildUc:  usecase.NewCreateModuleChildImpl(moduleChildRepo),
 		getChildUc:     usecase.NewGetModuleChildImpl(moduleChildRepo),
