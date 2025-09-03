@@ -18,8 +18,8 @@ func NewGRPCServer(
 	moduleChildService proto_module_child.ModuleChildServiceServer,
 ) *grpc_service.GRPCServer {
 	config := &grpc_service.GRPCServerConfig{
-		PortGRPC:     env.PORT_GRPC,
-		NameService:  env.NAME_SERVICE,
+		PortGRPC:     env.PortGrpc,
+		NameService:  env.NameService,
 		IsProduction: env.IsProduction(),
 	}
 	return grpc_service.NewGRPCServer(

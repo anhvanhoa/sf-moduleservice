@@ -8,7 +8,7 @@ import (
 
 type dbCache struct {
 	Addr        string
-	DB          int
+	Db          int
 	Password    string
 	MaxIdle     int
 	MaxActive   int
@@ -17,16 +17,16 @@ type dbCache struct {
 }
 
 type Env struct {
-	NODE_ENV string
-	URL_DB   string
+	NodeEnv string
+	UrlDb   string
 
-	NAME_SERVICE   string
-	PORT_GRPC      int
-	HOST_GRPC      string
-	INTERVAL_CHECK string
-	TIMEOUT_CHECK  string
+	NameService   string
+	PortGrpc      int
+	HostGrpc      string
+	IntervalCheck string
+	TimeoutCheck  string
 
-	DB_CACHE *dbCache
+	DbCache *dbCache
 }
 
 func NewEnv(env any) {
@@ -40,5 +40,5 @@ func NewEnv(env any) {
 }
 
 func (env *Env) IsProduction() bool {
-	return strings.ToLower(env.NODE_ENV) == "production"
+	return strings.ToLower(env.NodeEnv) == "production"
 }

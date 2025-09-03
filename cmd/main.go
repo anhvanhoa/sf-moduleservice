@@ -21,11 +21,11 @@ func StartGRPCServer() {
 	log := app.Log
 	db := app.DB
 	discoveryConfig := discovery.DiscoveryConfig{
-		ServiceName:   env.NAME_SERVICE,
-		ServicePort:   env.PORT_GRPC,
-		ServiceHost:   env.HOST_GRPC,
-		IntervalCheck: env.INTERVAL_CHECK,
-		TimeoutCheck:  env.TIMEOUT_CHECK,
+		ServiceName:   env.NameService,
+		ServicePort:   env.PortGrpc,
+		ServiceHost:   env.HostGrpc,
+		IntervalCheck: env.IntervalCheck,
+		TimeoutCheck:  env.TimeoutCheck,
 	}
 	discovery, err := discovery.NewDiscovery(&discoveryConfig)
 	if err != nil {
