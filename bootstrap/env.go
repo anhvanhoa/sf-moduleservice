@@ -7,26 +7,26 @@ import (
 )
 
 type dbCache struct {
-	Addr        string
-	Db          int
-	Password    string
-	MaxIdle     int
-	MaxActive   int
-	IdleTimeout int
-	Network     string
+	Addr        string `mapstructure:"addr"`
+	Db          int    `mapstructure:"db"`
+	Password    string `mapstructure:"password"`
+	MaxIdle     int    `mapstructure:"max_idle"`
+	MaxActive   int    `mapstructure:"max_active"`
+	IdleTimeout int    `mapstructure:"idle_timeout"`
+	Network     string `mapstructure:"network"`
 }
 
 type Env struct {
-	NodeEnv string
-	UrlDb   string
+	NodeEnv string `mapstructure:"node_env"`
+	UrlDb   string `mapstructure:"url_db"`
 
-	NameService   string
-	PortGrpc      int
-	HostGrpc      string
-	IntervalCheck string
-	TimeoutCheck  string
+	NameService   string `mapstructure:"name_service"`
+	PortGrpc      int    `mapstructure:"port_grpc"`
+	HostGrpc      string `mapstructure:"host_grpc"`
+	IntervalCheck string `mapstructure:"interval_check"`
+	TimeoutCheck  string `mapstructure:"timeout_check"`
 
-	DbCache *dbCache
+	DbCache *dbCache `mapstructure:"db_cache"`
 }
 
 func NewEnv(env any) {
