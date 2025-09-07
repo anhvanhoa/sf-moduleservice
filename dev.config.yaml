@@ -1,0 +1,16 @@
+NODE_ENV: 'development'
+
+URL_DB: 'postgres://postgres:123456@localhost:5432/module_service_db?sslmode=disable'
+NAME_SERVICE: 'ModuleService'
+PORT_GRPC: '50052'
+HOST_GRPC: 'localhost'
+INTERVAL_CHECK: '10s'
+TIMEOUT_CHECK: '5s'
+
+DB_CACHE:
+    Addr: 'localhost:6379'
+    DB: 0
+    Password: ''
+    MaxIdle: 100
+    MaxActive: 0
+    IdleTimeout: 180
