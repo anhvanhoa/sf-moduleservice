@@ -14,7 +14,6 @@ import (
 
 func (s *moduleChildService) UpdateModuleChild(ctx context.Context, req *proto_module_child.UpdateModuleChildRequest) (*proto_module_child.UpdateModuleChildResponse, error) {
 	moduleChild := &entity.ModuleChild{
-		ID:        req.Id,
 		ModuleID:  req.ModuleId,
 		Name:      req.Name,
 		Path:      req.Path,
@@ -35,7 +34,6 @@ func (s *moduleChildService) UpdateModuleChild(ctx context.Context, req *proto_m
 	}
 
 	moduleChildProto := &proto_module_child.ModuleChild{
-		Id:        updatedModuleChild.ID,
 		ModuleId:  updatedModuleChild.ModuleID,
 		Name:      updatedModuleChild.Name,
 		Path:      updatedModuleChild.Path,

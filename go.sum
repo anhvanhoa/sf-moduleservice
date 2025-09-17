@@ -11,12 +11,10 @@ github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751/go.mod h1:LOuy
 github.com/alecthomas/units v0.0.0-20151022065526-2efee857e7cf/go.mod h1:ybxpYRFXyAe+OPACYpWeL0wqObRcbAqCMya13uyzqw0=
 github.com/alecthomas/units v0.0.0-20190717042225-c3de453c63f4/go.mod h1:ybxpYRFXyAe+OPACYpWeL0wqObRcbAqCMya13uyzqw0=
 github.com/alecthomas/units v0.0.0-20190924025748-f65c72e2690d/go.mod h1:rBZYJk541a8SKzHPHnH3zbiI+7dagKZ0cgpgrD7Fyho=
-github.com/anhvanhoa/service-core v0.0.0-20250828091430-fd24519cea3d h1:023t5ow7Q+MgLwrPrTsVYBIg3GAiNl5b5EUd70iXpJk=
-github.com/anhvanhoa/service-core v0.0.0-20250828091430-fd24519cea3d/go.mod h1:m0B59kwGY976VCkQJt85rkV4ANFnko7x2ecn0ewCHA0=
 github.com/anhvanhoa/service-core v0.0.0-20250828100424-d6be367a7646 h1:HWCzr3Zia5m4IUc9UluC2Gj44PvzzB+2IeAu8F71FMQ=
 github.com/anhvanhoa/service-core v0.0.0-20250828100424-d6be367a7646/go.mod h1:m0B59kwGY976VCkQJt85rkV4ANFnko7x2ecn0ewCHA0=
-github.com/anhvanhoa/sf-proto v1.1.1 h1:vQsd2hmCtUs4n472I6prOG5tOcltQnPCWxNov/E4G5w=
-github.com/anhvanhoa/sf-proto v1.1.1/go.mod h1:CQ7MbEu4NIiPPbidqNJuvHegDs3kq1L8klTBnZxma3w=
+github.com/anhvanhoa/sf-proto v1.1.6-0.20250917043828-cba83305e35e h1:fO0onJuEQ/Wawbpdvg20H3vQsEp9eRCPHiXE7nbwsJk=
+github.com/anhvanhoa/sf-proto v1.1.6-0.20250917043828-cba83305e35e/go.mod h1:DahWzIe7u/kSQeyLPXKyWWuQEQDi+muJV1w84btk3vA=
 github.com/antlr4-go/antlr/v4 v4.13.1 h1:SqQKkuVZ+zWkMMNkjy5FZe5mr5WURWnlpmOuzYWrPrQ=
 github.com/antlr4-go/antlr/v4 v4.13.1/go.mod h1:GKmUxMtwp6ZgGwZSva4eWPC5mS6vUAmOABFgjdkM7Nw=
 github.com/armon/go-metrics v0.4.1 h1:hR91U9KYmb6bLBYLQjyM+3j+rcd/UhE+G78SFnF8gJA=

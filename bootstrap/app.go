@@ -21,8 +21,8 @@ func App() *Application {
 	log := log.InitLogGRPC(logConfig, zapcore.DebugLevel, env.IsProduction())
 
 	db := db.NewPostgresDB(db.ConfigDB{
-		URL:  env.URL_DB,
-		Mode: env.NODE_ENV,
+		URL:  env.UrlDb,
+		Mode: env.NodeEnv,
 	})
 
 	return &Application{

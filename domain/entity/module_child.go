@@ -8,7 +8,6 @@ import (
 
 type ModuleChild struct {
 	tableName struct{}      `pg:"module_childs,alias:mc"`
-	ID        string        `pg:"id,pk"`
 	ModuleID  string        `pg:"module_id"`
 	Name      string        `pg:"name"`
 	Path      string        `pg:"path"`

@@ -4,7 +4,7 @@ go 1.24.6
 
 require (
 	github.com/anhvanhoa/service-core v0.0.0-20250828100424-d6be367a7646
-	github.com/anhvanhoa/sf-proto v1.1.1
+	github.com/anhvanhoa/sf-proto v1.1.6-0.20250917043828-cba83305e35e
 	github.com/go-pg/pg/v10 v10.15.0
 	go.uber.org/zap v1.27.0
 	google.golang.org/grpc v1.75.0
@@ -37,7 +37,7 @@ require (
 	github.com/onsi/ginkgo v1.16.4 // indirect
 	github.com/onsi/gomega v1.15.0 // indirect
 	github.com/rogpeppe/go-internal v1.12.0 // indirect
-	github.com/spf13/viper v1.20.1 // indirect
+	github.com/spf13/viper v1.20.1
 	github.com/stoewer/go-strcase v1.3.1 // indirect
 	github.com/stretchr/objx v0.5.2 // indirect
 	golang.org/x/net v0.43.0 // indirect

@@ -25,7 +25,6 @@ func (s *moduleChildService) ListModuleChildren(ctx context.Context, req *proto_
 	moduleChildProtos := make([]*proto_module_child.ModuleChild, len(moduleChildren))
 	for i, moduleChild := range moduleChildren {
 		moduleChildProto := &proto_module_child.ModuleChild{
-			Id:        moduleChild.ID,
 			ModuleId:  moduleChild.ModuleID,
 			Name:      moduleChild.Name,
 			Path:      moduleChild.Path,

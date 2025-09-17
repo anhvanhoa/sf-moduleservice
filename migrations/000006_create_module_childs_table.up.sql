@@ -20,7 +20,6 @@ END$$;
 
 CREATE TABLE
     module_childs (
-        id UUID PRIMARY KEY DEFAULT gen_random_uuid (),
         module_id UUID NOT NULL,
         path TEXT NOT NULL,
         method module_child_method NOT NULL,

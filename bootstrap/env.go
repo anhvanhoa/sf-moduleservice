@@ -7,26 +7,24 @@ import (
 )
 
 type dbCache struct {
-	Addr        string
-	DB          int
-	Password    string
-	MaxIdle     int
-	MaxActive   int
-	IdleTimeout int
-	Network     string
+	Addr        string `mapstructure:"addr"`
+	Db          int    `mapstructure:"db"`
+	Password    string `mapstructure:"password"`
+	MaxIdle     int    `mapstructure:"max_idle"`
+	MaxActive   int    `mapstructure:"max_active"`
+	IdleTimeout int    `mapstructure:"idle_timeout"`
+	Network     string `mapstructure:"network"`
 }
 
 type Env struct {
-	NODE_ENV string
-	URL_DB   string
-
-	NAME_SERVICE   string
-	PORT_GRPC      int
-	HOST_GRPC      string
-	INTERVAL_CHECK string
-	TIMEOUT_CHECK  string
-
-	DB_CACHE *dbCache
+	NodeEnv       string   `mapstructure:"node_env"`
+	UrlDb         string   `mapstructure:"url_db"`
+	NameService   string   `mapstructure:"name_service"`
+	PortGprc      int      `mapstructure:"port_grpc"`
+	HostGprc      string   `mapstructure:"host_grpc"`
+	IntervalCheck string   `mapstructure:"interval_check"`
+	TimeoutCheck  string   `mapstructure:"timeout_check"`
+	DbCache       *dbCache `mapstructure:"db_cache"`
 }
 
 func NewEnv(env any) {
@@ -40,5 +38,5 @@ func NewEnv(env any) {
 }
 
 func (env *Env) IsProduction() bool {
-	return strings.ToLower(env.NODE_ENV) == "production"
+	return strings.ToLower(env.NodeEnv) == "production"
 }

@@ -1,3 +1,19 @@
+help:
+	@echo "Usage: make <target>"
+	@echo "Targets:"
+	@echo "  migrate-dev-up: Run migrations up"
+	@echo "  migrate-dev-down: Run migrations down"
+	@echo "  migrate-dev-reset: Run migrations reset"
+	@echo "  migrate-dev-drop: Run migrations drop"
+	@echo "  migrate-dev-create: Create a new migration"
+	@echo "  dev-docker-drop-db: Drop the database in the docker container"
+	@echo "  dev-docker-create-db: Create the database in the docker container"
+	@echo "  dev-create-db: Create the database"
+	@echo "  dev-drop-db: Drop the database"
+	@echo "  build: Build the application"
+	@echo "  run: Run the application"
+	@echo "  client: Run the client"
+
 migrate-dev-up:
 	migrate -path ./migrations -database "postgres://postgres:123456@localhost:5432/module_service_db?sslmode=disable" up
 
@@ -30,3 +46,6 @@ build:
 
 run:
 	go run cmd/main.go
+
+client:
+	go run cmd/client/main.go

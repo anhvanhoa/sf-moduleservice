@@ -28,7 +28,6 @@ func (s *moduleChildService) CreateModuleChild(ctx context.Context, req *proto_m
 	}
 
 	moduleChildProto := &proto_module_child.ModuleChild{
-		Id:        moduleChild.ID,
 		ModuleId:  moduleChild.ModuleID,
 		Name:      moduleChild.Name,
 		Path:      moduleChild.Path,
