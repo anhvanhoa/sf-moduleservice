@@ -1,7 +1,7 @@
 package bootstrap
 
 import (
-	"github.com/anhvanhoa/service-core/boostrap/db"
+	"github.com/anhvanhoa/service-core/bootstrap/db"
 	"github.com/anhvanhoa/service-core/domain/log"
 	"github.com/go-pg/pg/v10"
 	"go.uber.org/zap/zapcore"

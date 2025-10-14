@@ -5,8 +5,6 @@ import (
 
 	"module-service/bootstrap"
 	grpcservice "module-service/infrastructure/grpc_service"
-	moduleservice "module-service/infrastructure/grpc_service/module"
-	modulechildservice "module-service/infrastructure/grpc_service/module_child"
 
 	"github.com/anhvanhoa/service-core/domain/discovery"
 )
@@ -19,7 +17,7 @@ func StartGRPCServer() {
 	app := bootstrap.App()
 	env := app.Env
 	log := app.Log
-	db := app.DB
+	// db := app.DB
 	discoveryConfig := discovery.DiscoveryConfig{
 		ServiceName:   env.NameService,
 		ServicePort:   env.PortGprc,
@@ -33,9 +31,7 @@ func StartGRPCServer() {
 	}
 	discovery.Register()
 
-	moduleService := moduleservice.NewModuleService(db)
-	moduleChildService := modulechildservice.NewModuleChildService(db)
-	grpcSrv := grpcservice.NewGRPCServer(env, log, moduleService, moduleChildService)
+	grpcSrv := grpcservice.NewGRPCServer(env, log)
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	if err := grpcSrv.Start(ctx); err != nil {
