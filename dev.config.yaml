@@ -1,6 +1,6 @@
 node_env: "development"
-url_db: "postgres://postgres:123456@localhost:5432/module_service_db?sslmode=disable"
-name_service: "ModuleService"
+url_db: "postgres://pg:123456@localhost:5432/permission_service_db?sslmode=disable"
+name_service: "PermissionService"
 port_grpc: 50051
 host_grpc: "localhost"
 interval_check: "10s"

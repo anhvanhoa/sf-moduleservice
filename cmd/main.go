@@ -5,6 +5,11 @@ import (
 
 	"module-service/bootstrap"
 	grpcservice "module-service/infrastructure/grpc_service"
+	permission_service "module-service/infrastructure/grpc_service/permission"
+	resource_permission_service "module-service/infrastructure/grpc_service/resource_permission"
+	role_service "module-service/infrastructure/grpc_service/role"
+	role_permission_service "module-service/infrastructure/grpc_service/role_permission"
+	user_role_service "module-service/infrastructure/grpc_service/user_role"
 
 	"github.com/anhvanhoa/service-core/domain/discovery"
 )
@@ -31,7 +36,12 @@ func StartGRPCServer() {
 	}
 	discovery.Register()
 
-	grpcSrv := grpcservice.NewGRPCServer(env, log)
+	permissionServer := permission_service.NewPermissionServer(app.Repos)
+	roleServer := role_service.NewRoleServer(app.Repos)
+	rolePermissionServer := role_permission_service.NewRolePermissionServer(app.Repos)
+	resourcePermissionServer := resource_permission_service.NewResourcePermissionServer(app.Repos)
+	userRoleServer := user_role_service.NewUserRoleServer(app.Repos)
+	grpcSrv := grpcservice.NewGRPCServer(env, log, permissionServer, roleServer, rolePermissionServer, resourcePermissionServer, userRoleServer)
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	if err := grpcSrv.Start(ctx); err != nil {

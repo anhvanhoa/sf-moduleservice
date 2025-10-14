@@ -6,12 +6,14 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"strconv"
 	"strings"
 	"time"
 
-	proto_module "github.com/anhvanhoa/sf-proto/gen/module/v1"
-	proto_module_child "github.com/anhvanhoa/sf-proto/gen/module_child/v1"
+	proto_permission "github.com/anhvanhoa/sf-proto/gen/permission/v1"
+	proto_resource_permission "github.com/anhvanhoa/sf-proto/gen/resource_permission/v1"
+	proto_role "github.com/anhvanhoa/sf-proto/gen/role/v1"
+	proto_role_permission "github.com/anhvanhoa/sf-proto/gen/role_permission/v1"
+	proto_user_role "github.com/anhvanhoa/sf-proto/gen/user_role/v1"
 	"github.com/spf13/viper"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -25,26 +27,32 @@ func init() {
 	serverAddress = fmt.Sprintf("%s:%s", viper.GetString("host_grpc"), viper.GetString("port_grpc"))
 }
 
-type ModuleServiceClient struct {
-	moduleClient      proto_module.ModuleServiceClient
-	moduleChildClient proto_module_child.ModuleChildServiceClient
-	conn              *grpc.ClientConn
+type RoleServiceClient struct {
+	roleClient               proto_role.RoleServiceClient
+	permissionClient         proto_permission.PermissionServiceClient
+	rolePermissionClient     proto_role_permission.RolePermissionServiceClient
+	resourcePermissionClient proto_resource_permission.ResourcePermissionServiceClient
+	userRoleClient           proto_user_role.UserRoleServiceClient
+	conn                     *grpc.ClientConn
 }
 
-func NewModuleServiceClient(address string) (*ModuleServiceClient, error) {
+func NewRoleServiceClient(address string) (*RoleServiceClient, error) {
 	conn, err := grpc.Dial(address, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect to gRPC server: %v", err)
 	}
 
-	return &ModuleServiceClient{
-		moduleClient:      proto_module.NewModuleServiceClient(conn),
-		moduleChildClient: proto_module_child.NewModuleChildServiceClient(conn),
-		conn:              conn,
+	return &RoleServiceClient{
+		roleClient:               proto_role.NewRoleServiceClient(conn),
+		permissionClient:         proto_permission.NewPermissionServiceClient(conn),
+		rolePermissionClient:     proto_role_permission.NewRolePermissionServiceClient(conn),
+		resourcePermissionClient: proto_resource_permission.NewResourcePermissionServiceClient(conn),
+		userRoleClient:           proto_user_role.NewUserRoleServiceClient(conn),
+		conn:                     conn,
 	}, nil
 }
 
-func (c *ModuleServiceClient) Close() {
+func (c *RoleServiceClient) Close() {
 	if c.conn != nil {
 		c.conn.Close()
 	}
@@ -55,14 +63,14 @@ func cleanInput(s string) string {
 	return strings.ToValidUTF8(strings.TrimSpace(s), "")
 }
 
-// ================== Module Service Tests ==================
+// ================== Role Service Tests ==================
 
-func (c *ModuleServiceClient) TestCreateModule() {
-	fmt.Println("\n=== Test Create Module ===")
+func (c *RoleServiceClient) TestCreateRole() {
+	fmt.Println("\n=== Test Create Role ===")
 
 	reader := bufio.NewReader(os.Stdin)
 
-	fmt.Print("Enter module name: ")
+	fmt.Print("Enter role name: ")
 	name, _ := reader.ReadString('\n')
 	name = cleanInput(name)
 
@@ -70,120 +78,80 @@ func (c *ModuleServiceClient) TestCreateModule() {
 	description, _ := reader.ReadString('\n')
 	description = cleanInput(description)
 
-	fmt.Print("Enter status (default active): ")
-	status, _ := reader.ReadString('\n')
-	status = cleanInput(status)
-	if status == "" {
-		status = "active"
-	}
+	fmt.Print("Enter variant: ")
+	variant, _ := reader.ReadString('\n')
+	variant = cleanInput(variant)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	resp, err := c.moduleClient.CreateModule(ctx, &proto_module.CreateModuleRequest{
+	resp, err := c.roleClient.CreateRole(ctx, &proto_role.CreateRoleRequest{
 		Name:        name,
 		Description: description,
-		Status:      status,
+		Variant:     variant,
 	})
 	if err != nil {
-		fmt.Printf("Error calling CreateModule: %v\n", err)
+		fmt.Printf("Error calling CreateRole: %v\n", err)
 		return
 	}
 
-	fmt.Printf("Create Module result:\n")
-	fmt.Printf("ID: %s\n", resp.Module.Id)
-	fmt.Printf("Name: %s\n", resp.Module.Name)
-	fmt.Printf("Description: %s\n", resp.Module.Description)
-	fmt.Printf("Status: %s\n", resp.Module.Status)
+	fmt.Printf("Create Role result:\n")
+	fmt.Printf("Message: %s\n", resp.Message)
+	fmt.Printf("Success: %t\n", resp.Success)
 }
 
-func (c *ModuleServiceClient) TestGetModule() {
-	fmt.Println("\n=== Test Get Module ===")
+func (c *RoleServiceClient) TestGetRoleById() {
+	fmt.Println("\n=== Test Get Role By ID ===")
 
 	reader := bufio.NewReader(os.Stdin)
 
-	fmt.Print("Enter module ID: ")
+	fmt.Print("Enter role ID: ")
 	id, _ := reader.ReadString('\n')
 	id = cleanInput(id)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	resp, err := c.moduleClient.GetModule(ctx, &proto_module.GetModuleRequest{
+	resp, err := c.roleClient.GetRoleById(ctx, &proto_role.GetRoleByIdRequest{
 		Id: id,
 	})
 	if err != nil {
-		fmt.Printf("Error calling GetModule: %v\n", err)
+		fmt.Printf("Error calling GetRoleById: %v\n", err)
 		return
 	}
 
-	fmt.Printf("Get Module result:\n")
-	fmt.Printf("ID: %s\n", resp.Module.Id)
-	fmt.Printf("Name: %s\n", resp.Module.Name)
-	fmt.Printf("Description: %s\n", resp.Module.Description)
-	fmt.Printf("Status: %s\n", resp.Module.Status)
-	fmt.Printf("Created At: %s\n", resp.Module.CreatedAt)
-	if resp.Module.UpdatedAt != "" {
-		fmt.Printf("Updated At: %s\n", resp.Module.UpdatedAt)
-	}
+	fmt.Printf("Get Role result:\n")
+	fmt.Printf("ID: %s\n", resp.Role.Id)
+	fmt.Printf("Name: %s\n", resp.Role.Name)
+	fmt.Printf("Description: %s\n", resp.Role.Description)
+	fmt.Printf("Variant: %s\n", resp.Role.Variant)
 }
 
-func (c *ModuleServiceClient) TestListModules() {
-	fmt.Println("\n=== Test List Modules ===")
-
-	reader := bufio.NewReader(os.Stdin)
-
-	fmt.Print("Enter page (default 1): ")
-	pageStr, _ := reader.ReadString('\n')
-	pageStr = cleanInput(pageStr)
-	page := int32(1)
-	if pageStr != "" {
-		if p, err := strconv.Atoi(pageStr); err == nil {
-			page = int32(p)
-		}
-	}
-
-	fmt.Print("Enter limit (default 10): ")
-	limitStr, _ := reader.ReadString('\n')
-	limitStr = cleanInput(limitStr)
-	limit := int32(10)
-	if limitStr != "" {
-		if l, err := strconv.Atoi(limitStr); err == nil {
-			limit = int32(l)
-		}
-	}
+func (c *RoleServiceClient) TestGetAllRoles() {
+	fmt.Println("\n=== Test Get All Roles ===")
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	resp, err := c.moduleClient.ListModules(ctx, &proto_module.ListModulesRequest{
-		Pagination: &proto_module.PaginationRequest{
-			Page:  page,
-			Limit: limit,
-		},
-	})
+	resp, err := c.roleClient.GetAllRoles(ctx, &proto_role.GetAllRolesRequest{})
 	if err != nil {
-		fmt.Printf("Error calling ListModules: %v\n", err)
+		fmt.Printf("Error calling GetAllRoles: %v\n", err)
 		return
 	}
 
-	fmt.Printf("List Modules result:\n")
-	fmt.Printf("Total: %d\n", resp.Pagination.Total)
-	fmt.Printf("Page: %d\n", resp.Pagination.Page)
-	fmt.Printf("Limit: %d\n", resp.Pagination.Limit)
-	fmt.Printf("Total Pages: %d\n", resp.Pagination.TotalPages)
-	fmt.Printf("Modules:\n")
-	for i, module := range resp.Modules {
-		fmt.Printf("  [%d] ID: %s, Name: %s, Description: %s, Status: %s\n", i+1, module.Id, module.Name, module.Description, module.Status)
+	fmt.Printf("Get All Roles result:\n")
+	fmt.Printf("Total Roles: %d\n", len(resp.Roles))
+	for i, role := range resp.Roles {
+		fmt.Printf("  [%d] ID: %s, Name: %s, Description: %s, Variant: %s\n", i+1, role.Id, role.Name, role.Description, role.Variant)
 	}
 }
 
-func (c *ModuleServiceClient) TestUpdateModule() {
-	fmt.Println("\n=== Test Update Module ===")
+func (c *RoleServiceClient) TestUpdateRole() {
+	fmt.Println("\n=== Test Update Role ===")
 
 	reader := bufio.NewReader(os.Stdin)
 
-	fmt.Print("Enter module ID: ")
+	fmt.Print("Enter role ID: ")
 	id, _ := reader.ReadString('\n')
 	id = cleanInput(id)
 
@@ -195,328 +163,269 @@ func (c *ModuleServiceClient) TestUpdateModule() {
 	description, _ := reader.ReadString('\n')
 	description = cleanInput(description)
 
-	fmt.Print("Enter new status (default active): ")
-	status, _ := reader.ReadString('\n')
-	status = cleanInput(status)
-	if status == "" {
-		status = "active"
-	}
+	fmt.Print("Enter new variant: ")
+	variant, _ := reader.ReadString('\n')
+	variant = cleanInput(variant)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	resp, err := c.moduleClient.UpdateModule(ctx, &proto_module.UpdateModuleRequest{
+	resp, err := c.roleClient.UpdateRole(ctx, &proto_role.UpdateRoleRequest{
 		Id:          id,
 		Name:        name,
 		Description: description,
-		Status:      status,
+		Variant:     variant,
 	})
 	if err != nil {
-		fmt.Printf("Error calling UpdateModule: %v\n", err)
+		fmt.Printf("Error calling UpdateRole: %v\n", err)
 		return
 	}
 
-	fmt.Printf("Update Module result:\n")
-	fmt.Printf("ID: %s\n", resp.Module.Id)
-	fmt.Printf("Name: %s\n", resp.Module.Name)
-	fmt.Printf("Description: %s\n", resp.Module.Description)
-	fmt.Printf("Status: %s\n", resp.Module.Status)
-	fmt.Printf("Updated At: %s\n", resp.Module.UpdatedAt)
+	fmt.Printf("Update Role result:\n")
+	fmt.Printf("ID: %s\n", resp.Role.Id)
+	fmt.Printf("Name: %s\n", resp.Role.Name)
+	fmt.Printf("Description: %s\n", resp.Role.Description)
+	fmt.Printf("Variant: %s\n", resp.Role.Variant)
 }
 
-func (c *ModuleServiceClient) TestDeleteModule() {
-	fmt.Println("\n=== Test Delete Module ===")
+func (c *RoleServiceClient) TestDeleteRole() {
+	fmt.Println("\n=== Test Delete Role ===")
 
 	reader := bufio.NewReader(os.Stdin)
 
-	fmt.Print("Enter module ID to delete: ")
+	fmt.Print("Enter role ID to delete: ")
 	id, _ := reader.ReadString('\n')
 	id = cleanInput(id)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	resp, err := c.moduleClient.DeleteModule(ctx, &proto_module.DeleteModuleRequest{
+	resp, err := c.roleClient.DeleteRole(ctx, &proto_role.DeleteRoleRequest{
 		Id: id,
 	})
 	if err != nil {
-		fmt.Printf("Error calling DeleteModule: %v\n", err)
+		fmt.Printf("Error calling DeleteRole: %v\n", err)
 		return
 	}
 
-	fmt.Printf("Delete Module result:\n")
+	fmt.Printf("Delete Role result:\n")
 	fmt.Printf("Success: %t\n", resp.Success)
 }
 
-// ================== Module Child Service Tests ==================
+// ================== Permission Service Tests ==================
 
-func (c *ModuleServiceClient) TestCreateModuleChild() {
-	fmt.Println("\n=== Test Create Module Child ===")
+func (c *RoleServiceClient) TestCreatePermission() {
+	fmt.Println("\n=== Test Create Permission ===")
 
 	reader := bufio.NewReader(os.Stdin)
 
-	fmt.Print("Enter module ID: ")
-	moduleId, _ := reader.ReadString('\n')
-	moduleId = cleanInput(moduleId)
+	fmt.Print("Enter resource: ")
+	resource, _ := reader.ReadString('\n')
+	resource = cleanInput(resource)
 
-	fmt.Print("Enter child name: ")
-	name, _ := reader.ReadString('\n')
-	name = cleanInput(name)
+	fmt.Print("Enter action: ")
+	action, _ := reader.ReadString('\n')
+	action = cleanInput(action)
 
-	fmt.Print("Enter path: ")
-	path, _ := reader.ReadString('\n')
-	path = cleanInput(path)
-
-	fmt.Print("Enter method (GET, POST, PUT, DELETE): ")
-	method, _ := reader.ReadString('\n')
-	method = cleanInput(method)
-
-	fmt.Print("Is private? (true/false, default false): ")
-	isPrivateStr, _ := reader.ReadString('\n')
-	isPrivateStr = cleanInput(isPrivateStr)
-	isPrivate := false
-	if isPrivateStr == "true" {
-		isPrivate = true
-	}
-
-	fmt.Print("Enter status (default active): ")
-	status, _ := reader.ReadString('\n')
-	status = cleanInput(status)
-	if status == "" {
-		status = "active"
-	}
+	fmt.Print("Enter description: ")
+	description, _ := reader.ReadString('\n')
+	description = cleanInput(description)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	resp, err := c.moduleChildClient.CreateModuleChild(ctx, &proto_module_child.CreateModuleChildRequest{
-		ModuleId:  moduleId,
-		Name:      name,
-		Path:      path,
-		Method:    method,
-		IsPrivate: isPrivate,
-		Status:    status,
+	resp, err := c.permissionClient.CreatePermission(ctx, &proto_permission.CreatePermissionRequest{
+		Resource:    resource,
+		Action:      action,
+		Description: description,
 	})
 	if err != nil {
-		fmt.Printf("Error calling CreateModuleChild: %v\n", err)
+		fmt.Printf("Error calling CreatePermission: %v\n", err)
 		return
 	}
 
-	fmt.Printf("Create Module Child result:\n")
-	fmt.Printf("ID: %s\n", resp.ModuleChild.Id)
-	fmt.Printf("Module ID: %s\n", resp.ModuleChild.ModuleId)
-	fmt.Printf("Name: %s\n", resp.ModuleChild.Name)
-	fmt.Printf("Path: %s\n", resp.ModuleChild.Path)
-	fmt.Printf("Method: %s\n", resp.ModuleChild.Method)
-	fmt.Printf("Is Private: %t\n", resp.ModuleChild.IsPrivate)
-	fmt.Printf("Status: %s\n", resp.ModuleChild.Status)
-	fmt.Printf("Created At: %s\n", resp.ModuleChild.CreatedAt)
+	fmt.Printf("Create Permission result:\n")
+	fmt.Printf("ID: %s\n", resp.Permission.Id)
+	fmt.Printf("Resource: %s\n", resp.Permission.Resource)
+	fmt.Printf("Action: %s\n", resp.Permission.Action)
+	fmt.Printf("Description: %s\n", resp.Permission.Description)
 }
 
-func (c *ModuleServiceClient) TestGetModuleChild() {
-	fmt.Println("\n=== Test Get Module Child ===")
+func (c *RoleServiceClient) TestGetPermission() {
+	fmt.Println("\n=== Test Get Permission ===")
 
 	reader := bufio.NewReader(os.Stdin)
 
-	fmt.Print("Enter module child ID: ")
+	fmt.Print("Enter permission ID: ")
 	id, _ := reader.ReadString('\n')
 	id = cleanInput(id)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	resp, err := c.moduleChildClient.GetModuleChild(ctx, &proto_module_child.GetModuleChildRequest{
+	resp, err := c.permissionClient.GetPermission(ctx, &proto_permission.GetPermissionRequest{
 		Id: id,
 	})
 	if err != nil {
-		fmt.Printf("Error calling GetModuleChild: %v\n", err)
+		fmt.Printf("Error calling GetPermission: %v\n", err)
 		return
 	}
 
-	fmt.Printf("Get Module Child result:\n")
-	fmt.Printf("ID: %s\n", resp.ModuleChild.Id)
-	fmt.Printf("Module ID: %s\n", resp.ModuleChild.ModuleId)
-	fmt.Printf("Name: %s\n", resp.ModuleChild.Name)
-	fmt.Printf("Path: %s\n", resp.ModuleChild.Path)
-	fmt.Printf("Method: %s\n", resp.ModuleChild.Method)
-	fmt.Printf("Is Private: %t\n", resp.ModuleChild.IsPrivate)
-	fmt.Printf("Status: %s\n", resp.ModuleChild.Status)
-	fmt.Printf("Created At: %s\n", resp.ModuleChild.CreatedAt)
-	if resp.ModuleChild.UpdatedAt != "" {
-		fmt.Printf("Updated At: %s\n", resp.ModuleChild.UpdatedAt)
-	}
+	fmt.Printf("Get Permission result:\n")
+	fmt.Printf("ID: %s\n", resp.Permission.Id)
+	fmt.Printf("Resource: %s\n", resp.Permission.Resource)
+	fmt.Printf("Action: %s\n", resp.Permission.Action)
+	fmt.Printf("Description: %s\n", resp.Permission.Description)
 }
 
-func (c *ModuleServiceClient) TestListModuleChildren() {
-	fmt.Println("\n=== Test List Module Children ===")
-
-	reader := bufio.NewReader(os.Stdin)
-
-	fmt.Print("Enter module ID: ")
-	moduleId, _ := reader.ReadString('\n')
-	moduleId = cleanInput(moduleId)
-
-	fmt.Print("Enter page (default 1): ")
-	pageStr, _ := reader.ReadString('\n')
-	pageStr = cleanInput(pageStr)
-	page := int32(1)
-	if pageStr != "" {
-		if p, err := strconv.Atoi(pageStr); err == nil {
-			page = int32(p)
-		}
-	}
-
-	fmt.Print("Enter limit (default 10): ")
-	limitStr, _ := reader.ReadString('\n')
-	limitStr = cleanInput(limitStr)
-	limit := int32(10)
-	if limitStr != "" {
-		if l, err := strconv.Atoi(limitStr); err == nil {
-			limit = int32(l)
-		}
-	}
+func (c *RoleServiceClient) TestListPermissions() {
+	fmt.Println("\n=== Test List Permissions ===")
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	resp, err := c.moduleChildClient.ListModuleChildren(ctx, &proto_module_child.ListModuleChildrenRequest{
-		ModuleId: moduleId,
-		Pagination: &proto_module_child.PaginationRequest{
-			Page:  page,
-			Limit: limit,
-		},
-	})
+	resp, err := c.permissionClient.ListPermissions(ctx, &proto_permission.ListPermissionsRequest{})
 	if err != nil {
-		fmt.Printf("Error calling ListModuleChildren: %v\n", err)
+		fmt.Printf("Error calling ListPermissions: %v\n", err)
 		return
 	}
 
-	fmt.Printf("List Module Children result:\n")
-	fmt.Printf("Total: %d\n", resp.Pagination.Total)
-	fmt.Printf("Page: %d\n", resp.Pagination.Page)
-	fmt.Printf("Limit: %d\n", resp.Pagination.Limit)
-	fmt.Printf("Total Pages: %d\n", resp.Pagination.TotalPages)
-	fmt.Printf("Module Children:\n")
-	for i, child := range resp.ModuleChildren {
-		fmt.Printf("  [%d] ID: %s, Name: %s, Path: %s, Method: %s, Status: %s\n", i+1, child.Id, child.Name, child.Path, child.Method, child.Status)
+	fmt.Printf("List Permissions result:\n")
+	fmt.Printf("Total Permissions: %d\n", len(resp.Permissions))
+	fmt.Printf("Permissions:\n")
+	for i, permission := range resp.Permissions {
+		fmt.Printf("  [%d] ID: %s, Resource: %s, Action: %s, Description: %s\n", i+1, permission.Id, permission.Resource, permission.Action, permission.Description)
 	}
 }
 
-func (c *ModuleServiceClient) TestUpdateModuleChild() {
-	fmt.Println("\n=== Test Update Module Child ===")
+func (c *RoleServiceClient) TestUpdatePermission() {
+	fmt.Println("\n=== Test Update Permission ===")
 
 	reader := bufio.NewReader(os.Stdin)
 
-	fmt.Print("Enter module child ID: ")
+	fmt.Print("Enter permission ID: ")
 	id, _ := reader.ReadString('\n')
 	id = cleanInput(id)
 
-	fmt.Print("Enter new name: ")
-	name, _ := reader.ReadString('\n')
-	name = cleanInput(name)
+	fmt.Print("Enter new resource: ")
+	resource, _ := reader.ReadString('\n')
+	resource = cleanInput(resource)
 
-	fmt.Print("Enter new path: ")
-	path, _ := reader.ReadString('\n')
-	path = cleanInput(path)
+	fmt.Print("Enter new action: ")
+	action, _ := reader.ReadString('\n')
+	action = cleanInput(action)
 
-	fmt.Print("Enter new method (GET, POST, PUT, DELETE): ")
-	method, _ := reader.ReadString('\n')
-	method = cleanInput(method)
-
-	fmt.Print("Is private? (true/false): ")
-	isPrivateStr, _ := reader.ReadString('\n')
-	isPrivateStr = cleanInput(isPrivateStr)
-	isPrivate := false
-	if isPrivateStr == "true" {
-		isPrivate = true
-	}
-
-	fmt.Print("Enter new status (default active): ")
-	status, _ := reader.ReadString('\n')
-	status = cleanInput(status)
-	if status == "" {
-		status = "active"
-	}
+	fmt.Print("Enter new description: ")
+	description, _ := reader.ReadString('\n')
+	description = cleanInput(description)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	resp, err := c.moduleChildClient.UpdateModuleChild(ctx, &proto_module_child.UpdateModuleChildRequest{
-		Id:        id,
-		Name:      name,
-		Path:      path,
-		Method:    method,
-		IsPrivate: isPrivate,
-		Status:    status,
+	resp, err := c.permissionClient.UpdatePermission(ctx, &proto_permission.UpdatePermissionRequest{
+		Id:          id,
+		Resource:    resource,
+		Action:      action,
+		Description: description,
 	})
 	if err != nil {
-		fmt.Printf("Error calling UpdateModuleChild: %v\n", err)
+		fmt.Printf("Error calling UpdatePermission: %v\n", err)
 		return
 	}
 
-	fmt.Printf("Update Module Child result:\n")
-	fmt.Printf("ID: %s\n", resp.ModuleChild.Id)
-	fmt.Printf("Module ID: %s\n", resp.ModuleChild.ModuleId)
-	fmt.Printf("Name: %s\n", resp.ModuleChild.Name)
-	fmt.Printf("Path: %s\n", resp.ModuleChild.Path)
-	fmt.Printf("Method: %s\n", resp.ModuleChild.Method)
-	fmt.Printf("Is Private: %t\n", resp.ModuleChild.IsPrivate)
-	fmt.Printf("Status: %s\n", resp.ModuleChild.Status)
-	fmt.Printf("Updated At: %s\n", resp.ModuleChild.UpdatedAt)
+	fmt.Printf("Update Permission result:\n")
+	fmt.Printf("ID: %s\n", resp.Permission.Id)
+	fmt.Printf("Resource: %s\n", resp.Permission.Resource)
+	fmt.Printf("Action: %s\n", resp.Permission.Action)
+	fmt.Printf("Description: %s\n", resp.Permission.Description)
 }
 
-func (c *ModuleServiceClient) TestDeleteModuleChild() {
-	fmt.Println("\n=== Test Delete Module Child ===")
+func (c *RoleServiceClient) TestDeletePermission() {
+	fmt.Println("\n=== Test Delete Permission ===")
 
 	reader := bufio.NewReader(os.Stdin)
 
-	fmt.Print("Enter module child ID to delete: ")
+	fmt.Print("Enter permission ID to delete: ")
 	id, _ := reader.ReadString('\n')
 	id = cleanInput(id)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	resp, err := c.moduleChildClient.DeleteModuleChild(ctx, &proto_module_child.DeleteModuleChildRequest{
+	_, err := c.permissionClient.DeletePermission(ctx, &proto_permission.DeletePermissionRequest{
 		Id: id,
 	})
 	if err != nil {
-		fmt.Printf("Error calling DeleteModuleChild: %v\n", err)
+		fmt.Printf("Error calling DeletePermission: %v\n", err)
 		return
 	}
 
-	fmt.Printf("Delete Module Child result:\n")
-	fmt.Printf("Success: %t\n", resp.Success)
+	fmt.Printf("Delete Permission result:\n")
+	fmt.Printf("Permission deleted successfully\n")
 }
 
 // ================== Menu Functions ==================
 
 func printMainMenu() {
-	fmt.Println("\n=== gRPC Module Service Test Client ===")
-	fmt.Println("1. Module Service")
-	fmt.Println("2. Module Child Service")
+	fmt.Println("\n=== gRPC Role Service Test Client ===")
+	fmt.Println("1. Role Service")
+	fmt.Println("2. Permission Service")
+	fmt.Println("3. Role Permission Service")
+	fmt.Println("4. Resource Permission Service")
+	fmt.Println("5. User Role Service")
 	fmt.Println("0. Exit")
 	fmt.Print("Enter your choice: ")
 }
 
-func printModuleMenu() {
-	fmt.Println("\n=== Module Service ===")
-	fmt.Println("1. Create Module")
-	fmt.Println("2. Get Module")
-	fmt.Println("3. List Modules")
-	fmt.Println("4. Update Module")
-	fmt.Println("5. Delete Module")
+func printRoleMenu() {
+	fmt.Println("\n=== Role Service ===")
+	fmt.Println("1. Create Role")
+	fmt.Println("2. Get Role By ID")
+	fmt.Println("3. Get All Roles")
+	fmt.Println("4. Update Role")
+	fmt.Println("5. Delete Role")
 	fmt.Println("0. Back to Main Menu")
 	fmt.Print("Enter your choice: ")
 }
 
-func printModuleChildMenu() {
-	fmt.Println("\n=== Module Child Service ===")
-	fmt.Println("1. Create Module Child")
-	fmt.Println("2. Get Module Child")
-	fmt.Println("3. List Module Children")
-	fmt.Println("4. Update Module Child")
-	fmt.Println("5. Delete Module Child")
+func printPermissionMenu() {
+	fmt.Println("\n=== Permission Service ===")
+	fmt.Println("1. Create Permission")
+	fmt.Println("2. Get Permission")
+	fmt.Println("3. List Permissions")
+	fmt.Println("4. Update Permission")
+	fmt.Println("5. Delete Permission")
+	fmt.Println("0. Back to Main Menu")
+	fmt.Print("Enter your choice: ")
+}
+
+func printRolePermissionMenu() {
+	fmt.Println("\n=== Role Permission Service ===")
+	fmt.Println("1. Create Role Permission")
+	fmt.Println("2. List Role Permissions")
+	fmt.Println("3. Delete Role Permission")
+	fmt.Println("0. Back to Main Menu")
+	fmt.Print("Enter your choice: ")
+}
+
+func printResourcePermissionMenu() {
+	fmt.Println("\n=== Resource Permission Service ===")
+	fmt.Println("1. Create Resource Permission")
+	fmt.Println("2. Get Resource Permission")
+	fmt.Println("3. List Resource Permissions")
+	fmt.Println("4. Update Resource Permission")
+	fmt.Println("5. Delete Resource Permission")
+	fmt.Println("0. Back to Main Menu")
+	fmt.Print("Enter your choice: ")
+}
+
+func printUserRoleMenu() {
+	fmt.Println("\n=== User Role Service ===")
+	fmt.Println("1. Create User Role")
+	fmt.Println("2. Get User Role")
+	fmt.Println("3. List User Roles")
+	fmt.Println("4. Update User Role")
+	fmt.Println("5. Delete User Role")
 	fmt.Println("0. Back to Main Menu")
 	fmt.Print("Enter your choice: ")
 }
@@ -528,7 +437,7 @@ func main() {
 	}
 
 	fmt.Printf("Connecting to gRPC server at %s...\n", address)
-	client, err := NewModuleServiceClient(address)
+	client, err := NewRoleServiceClient(address)
 	if err != nil {
 		log.Fatalf("Failed to create gRPC client: %v", err)
 	}
@@ -545,23 +454,23 @@ func main() {
 
 		switch choice {
 		case "1":
-			// Module Service
+			// Role Service
 			for {
-				printModuleMenu()
+				printRoleMenu()
 				subChoice, _ := reader.ReadString('\n')
 				subChoice = cleanInput(subChoice)
 
 				switch subChoice {
 				case "1":
-					client.TestCreateModule()
+					client.TestCreateRole()
 				case "2":
-					client.TestGetModule()
+					client.TestGetRoleById()
 				case "3":
-					client.TestListModules()
+					client.TestGetAllRoles()
 				case "4":
-					client.TestUpdateModule()
+					client.TestUpdateRole()
 				case "5":
-					client.TestDeleteModule()
+					client.TestDeleteRole()
 				case "0":
 				default:
 					fmt.Println("Invalid choice. Please try again.")
@@ -572,23 +481,100 @@ func main() {
 				}
 			}
 		case "2":
-			// Module Child Service
+			// Permission Service
 			for {
-				printModuleChildMenu()
+				printPermissionMenu()
 				subChoice, _ := reader.ReadString('\n')
 				subChoice = cleanInput(subChoice)
 
 				switch subChoice {
 				case "1":
-					client.TestCreateModuleChild()
+					client.TestCreatePermission()
 				case "2":
-					client.TestGetModuleChild()
+					client.TestGetPermission()
 				case "3":
-					client.TestListModuleChildren()
+					client.TestListPermissions()
 				case "4":
-					client.TestUpdateModuleChild()
+					client.TestUpdatePermission()
 				case "5":
-					client.TestDeleteModuleChild()
+					client.TestDeletePermission()
+				case "0":
+				default:
+					fmt.Println("Invalid choice. Please try again.")
+					continue
+				}
+				if subChoice == "0" {
+					break
+				}
+			}
+		case "3":
+			// Role Permission Service
+			for {
+				printRolePermissionMenu()
+				subChoice, _ := reader.ReadString('\n')
+				subChoice = cleanInput(subChoice)
+
+				switch subChoice {
+				case "1":
+					fmt.Println("Create Role Permission - Not implemented yet")
+				case "2":
+					fmt.Println("List Role Permissions - Not implemented yet")
+				case "3":
+					fmt.Println("Delete Role Permission - Not implemented yet")
+				case "0":
+				default:
+					fmt.Println("Invalid choice. Please try again.")
+					continue
+				}
+				if subChoice == "0" {
+					break
+				}
+			}
+		case "4":
+			// Resource Permission Service
+			for {
+				printResourcePermissionMenu()
+				subChoice, _ := reader.ReadString('\n')
+				subChoice = cleanInput(subChoice)
+
+				switch subChoice {
+				case "1":
+					fmt.Println("Create Resource Permission - Not implemented yet")
+				case "2":
+					fmt.Println("Get Resource Permission - Not implemented yet")
+				case "3":
+					fmt.Println("List Resource Permissions - Not implemented yet")
+				case "4":
+					fmt.Println("Update Resource Permission - Not implemented yet")
+				case "5":
+					fmt.Println("Delete Resource Permission - Not implemented yet")
+				case "0":
+				default:
+					fmt.Println("Invalid choice. Please try again.")
+					continue
+				}
+				if subChoice == "0" {
+					break
+				}
+			}
+		case "5":
+			// User Role Service
+			for {
+				printUserRoleMenu()
+				subChoice, _ := reader.ReadString('\n')
+				subChoice = cleanInput(subChoice)
+
+				switch subChoice {
+				case "1":
+					fmt.Println("Create User Role - Not implemented yet")
+				case "2":
+					fmt.Println("Get User Role - Not implemented yet")
+				case "3":
+					fmt.Println("List User Roles - Not implemented yet")
+				case "4":
+					fmt.Println("Update User Role - Not implemented yet")
+				case "5":
+					fmt.Println("Delete User Role - Not implemented yet")
 				case "0":
 				default:
 					fmt.Println("Invalid choice. Please try again.")

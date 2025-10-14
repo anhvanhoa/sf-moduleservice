@@ -1,51 +1,57 @@
-help:
-	@echo "Usage: make <target>"
-	@echo "Targets:"
-	@echo "  migrate-dev-up: Run migrations up"
-	@echo "  migrate-dev-down: Run migrations down"
-	@echo "  migrate-dev-reset: Run migrations reset"
-	@echo "  migrate-dev-drop: Run migrations drop"
-	@echo "  migrate-dev-create: Create a new migration"
-	@echo "  dev-docker-drop-db: Drop the database in the docker container"
-	@echo "  dev-docker-create-db: Create the database in the docker container"
-	@echo "  dev-create-db: Create the database"
-	@echo "  dev-drop-db: Drop the database"
-	@echo "  build: Build the application"
-	@echo "  run: Run the application"
-	@echo "  client: Run the client"
+NAME_DB=permission_service_db
+PORT_DB=5432
+USER_DB=pg
+PASSWORD_DB=123456
+HOST_DB=localhost
+SSL_MODE=disable
+DB_URL="postgres://${USER_DB}:${PASSWORD_DB}@${HOST_DB}:${PORT_DB}/${NAME_DB}?sslmode=${SSL_MODE}"
+NAME_CONTAINER=postgis-gis
+MIGRATIONS_DIR = ./migrations
 
-migrate-dev-up:
-	migrate -path ./migrations -database "postgres://postgres:123456@localhost:5432/module_service_db?sslmode=disable" up
+.PHONY: help up down version force create
 
-migrate-dev-down:
-	migrate -path ./migrations -database "postgres://postgres:123456@localhost:5432/module_service_db?sslmode=disable" down
+help: ## Show this help message
+	@echo "Available commands:"
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
 
-migrate-dev-reset:
-	migrate -path ./migrations -database "postgres://postgres:123456@localhost:5432/module_service_db?sslmode=disable" reset
+up: ## Run all pending migrations
+	migrate -path ${MIGRATIONS_DIR} -database ${DB_URL} up
 
-migrate-dev-drop:
-	migrate -path ./migrations -database "postgres://postgres:123456@localhost:5432/module_service_db?sslmode=disable" drop
+down: ## Rollback the last migration
+	migrate -path ${MIGRATIONS_DIR} -database ${DB_URL} down
 
-migrate-dev-create:
-	migrate create -ext sql -dir ./migrations -seq $(name)
+force: ## Force the last migration
+	migrate -path ${MIGRATIONS_DIR} -database ${DB_URL} force $(v)
 
-dev-docker-drop-db:
-	docker exec -it postgres_container dropdb --force -U postgres module_service_db
+reset: ## Reset database completely
+	migrate -path ${MIGRATIONS_DIR} -database ${DB_URL} reset
 
-dev-docker-create-db:
-	docker exec -it postgres_container createdb -U postgres module_service_db
+drop: ## Drop database
+	migrate -path ${MIGRATIONS_DIR} -database ${DB_URL} drop
 
-dev-create-db:
-	createdb -U postgres module_service_db
+create:
+	migrate create -ext sql -dir ${MIGRATIONS_DIR} -seq $(name)
 
-dev-drop-db:
-	dropdb -U postgres module_service_db
+docker-drop-db: ## Drop database in the container
+	docker exec -it ${NAME_CONTAINER} dropdb --force -U ${USER_DB} ${NAME_DB}
 
-build:
-	go build -o app cmd/main.go
+docker-create-db: ## Create database in the container
+	docker exec -it ${NAME_CONTAINER} createdb -U ${USER_DB} ${NAME_DB}
 
-run:
+create-db: ## Create database
+	createdb -U ${USER_DB} ${NAME_DB}
+
+drop-db: ## Drop database
+	dropdb -U ${USER_DB} ${NAME_DB}
+
+build: ## Build the application
+	go build -o ./bin/app cmd/main.go
+
+run: ## Run the application
 	go run cmd/main.go
 
-client:
+client: ## Run the client application
 	go run cmd/client/main.go
+
+seed: ## Run all pending migrations
+	go run script/seed/main.go ${type}
