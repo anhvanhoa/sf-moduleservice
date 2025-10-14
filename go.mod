@@ -4,7 +4,7 @@ go 1.24.6
 
 require (
 	github.com/anhvanhoa/service-core v0.0.0-20251008083007-3a4d96fe5f88
-	github.com/anhvanhoa/sf-proto v0.0.0-20251014075058-f2bb2eeff57b
+	github.com/anhvanhoa/sf-proto v0.0.0-20251014151345-90d4bec00fcd
 	github.com/go-pg/pg/v10 v10.15.0
 	go.uber.org/zap v1.27.0
 	google.golang.org/grpc v1.76.0
@@ -42,7 +42,7 @@ require (
 	golang.org/x/net v0.44.0 // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20251007200510-49b9836ed3ff // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20251002232023-7c0ddcbb5797 // indirect
-	google.golang.org/protobuf v1.36.10 // indirect
+	google.golang.org/protobuf v1.36.10
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1 // indirect
 )
 

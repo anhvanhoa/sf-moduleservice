@@ -21,5 +21,9 @@ func NewCreateRolePermissionUsecase(rolePermissionRepository repository.RolePerm
 }
 
 func (u *CreateRolePermissionUsecaseImpl) Execute(ctx context.Context, rolePermission *entity.RolePermission) error {
-	return u.rolePermissionRepository.Create(ctx, rolePermission)
+	err := u.rolePermissionRepository.Create(ctx, rolePermission)
+	if err != nil {
+		return ErrCreateRolePermission
+	}
+	return nil
 }

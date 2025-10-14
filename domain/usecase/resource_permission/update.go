@@ -21,5 +21,9 @@ func NewUpdateResourcePermissionUsecase(resourcePermissionRepository repository.
 }
 
 func (u *UpdateResourcePermissionUsecaseImpl) Execute(ctx context.Context, resourcePermission *entity.ResourcePermission) error {
-	return u.resourcePermissionRepository.Update(ctx, resourcePermission)
+	err := u.resourcePermissionRepository.Update(ctx, resourcePermission)
+	if err != nil {
+		return ErrUpdateResourcePermission
+	}
+	return nil
 }

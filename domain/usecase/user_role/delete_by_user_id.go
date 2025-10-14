@@ -20,5 +20,9 @@ func NewDeleteByUserIDUsecase(userRoleRepository repository.UserRoleRepository) 
 }
 
 func (u *DeleteByUserIDUsecaseImpl) Execute(ctx context.Context, userID string) error {
-	return u.userRoleRepository.DeleteByUserID(ctx, userID)
+	err := u.userRoleRepository.DeleteByUserID(ctx, userID)
+	if err != nil {
+		return ErrDeleteByUserID
+	}
+	return nil
 }

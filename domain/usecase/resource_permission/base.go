@@ -6,12 +6,13 @@ import (
 	"module-service/domain/repository"
 
 	"github.com/anhvanhoa/service-core/common"
+	"github.com/anhvanhoa/service-core/utils"
 )
 
 type ResourcePermissionUsecaseI interface {
 	Create(ctx context.Context, resourcePermission *entity.ResourcePermission) error
 	GetByID(ctx context.Context, id string) (*entity.ResourcePermission, error)
-	List(ctx context.Context, pagination common.Pagination, filter entity.ResourcePermissionFilter) ([]*entity.ResourcePermission, int64, error)
+	List(ctx context.Context, pagination common.Pagination, filter entity.ResourcePermissionFilter) (common.PaginationResult[*entity.ResourcePermission], error)
 	Update(ctx context.Context, resourcePermission *entity.ResourcePermission) error
 	Delete(ctx context.Context, id string) error
 	DeleteByUserID(ctx context.Context, userID string) error
@@ -38,11 +39,14 @@ type ResourcePermissionUsecaseImpl struct {
 	existsResourcePermissionUsecase ExistsResourcePermissionUsecase
 }
 
-func NewResourcePermissionUsecase(resourcePermissionRepository repository.ResourcePermissionRepository) ResourcePermissionUsecaseI {
+func NewResourcePermissionUsecase(
+	resourcePermissionRepository repository.ResourcePermissionRepository,
+	helper utils.Helper,
+) ResourcePermissionUsecaseI {
 	return &ResourcePermissionUsecaseImpl{
 		createResourcePermissionUsecase: NewCreateResourcePermissionUsecase(resourcePermissionRepository),
 		getResourcePermissionUsecase:    NewGetResourcePermissionUsecase(resourcePermissionRepository),
-		listResourcePermissionsUsecase:  NewListResourcePermissionsUsecase(resourcePermissionRepository),
+		listResourcePermissionsUsecase:  NewListResourcePermissionsUsecase(resourcePermissionRepository, helper),
 		updateResourcePermissionUsecase: NewUpdateResourcePermissionUsecase(resourcePermissionRepository),
 		deleteResourcePermissionUsecase: NewDeleteResourcePermissionUsecase(resourcePermissionRepository),
 		deleteByUserIDUsecase:           NewDeleteByUserIDUsecase(resourcePermissionRepository),
@@ -63,7 +67,7 @@ func (u *ResourcePermissionUsecaseImpl) GetByID(ctx context.Context, id string) 
 	return u.getResourcePermissionUsecase.Execute(ctx, id)
 }
 
-func (u *ResourcePermissionUsecaseImpl) List(ctx context.Context, pagination common.Pagination, filter entity.ResourcePermissionFilter) ([]*entity.ResourcePermission, int64, error) {
+func (u *ResourcePermissionUsecaseImpl) List(ctx context.Context, pagination common.Pagination, filter entity.ResourcePermissionFilter) (common.PaginationResult[*entity.ResourcePermission], error) {
 	return u.listResourcePermissionsUsecase.Execute(ctx, pagination, filter)
 }
 

@@ -21,5 +21,9 @@ func NewUpdatePermissionUsecase(permissionRepository repository.PermissionReposi
 }
 
 func (u *UpdatePermissionUsecaseImpl) Execute(ctx context.Context, permission *entity.Permission) error {
-	return u.permissionRepository.Update(ctx, permission)
+	err := u.permissionRepository.Update(ctx, permission)
+	if err != nil {
+		return ErrUpdatePermission
+	}
+	return nil
 }

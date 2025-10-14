@@ -21,5 +21,9 @@ func NewCreateUserRoleUsecase(userRoleRepository repository.UserRoleRepository) 
 }
 
 func (u *CreateUserRoleUsecaseImpl) Execute(ctx context.Context, userRole *entity.UserRole) error {
-	return u.userRoleRepository.Create(ctx, userRole)
+	err := u.userRoleRepository.Create(ctx, userRole)
+	if err != nil {
+		return ErrCreateUserRole
+	}
+	return nil
 }

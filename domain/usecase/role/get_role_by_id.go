@@ -20,5 +20,9 @@ func NewGetRoleByIDUsecase(roleRepo repository.RoleRepository) GetRoleByIDUsecas
 }
 
 func (g *getRoleByIDUsecase) Excute(id string) (entity.Role, error) {
-	return g.roleRepo.GetRoleByID(id)
+	role, err := g.roleRepo.GetRoleByID(id)
+	if err != nil {
+		return entity.Role{}, ErrRoleNotFound
+	}
+	return role, nil
 }

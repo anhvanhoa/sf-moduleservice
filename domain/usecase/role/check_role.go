@@ -19,5 +19,9 @@ func NewCheckRoleUsecase(roleRepo repository.RoleRepository) CheckRoleUsecase {
 }
 
 func (c *checkRoleUsecase) Excute(name string) (bool, error) {
-	return c.roleRepo.CheckRoleExist(name)
+	isExist, err := c.roleRepo.CheckRoleExist(name)
+	if err != nil {
+		return false, ErrCheckRole
+	}
+	return isExist, nil
 }

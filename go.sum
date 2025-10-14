@@ -13,8 +13,8 @@ github.com/alecthomas/units v0.0.0-20190717042225-c3de453c63f4/go.mod h1:ybxpYRF
 github.com/alecthomas/units v0.0.0-20190924025748-f65c72e2690d/go.mod h1:rBZYJk541a8SKzHPHnH3zbiI+7dagKZ0cgpgrD7Fyho=
 github.com/anhvanhoa/service-core v0.0.0-20251008083007-3a4d96fe5f88 h1:i9BB89ByXU16prO/iOKbWxrKi9lQtTmkT1MQTYN4oaI=
 github.com/anhvanhoa/service-core v0.0.0-20251008083007-3a4d96fe5f88/go.mod h1:OE5O2WZPf9uv7mwzYPV+x7gD2wxdlsrrPOTOTHT4Imw=
-github.com/anhvanhoa/sf-proto v0.0.0-20251014075058-f2bb2eeff57b h1:na6BDg8s1vAQnLBak2HrTkq/VEf8bdjQVrctEl6EvYU=
-github.com/anhvanhoa/sf-proto v0.0.0-20251014075058-f2bb2eeff57b/go.mod h1:fDjSJFXd2PoPiOod6qKRGVjurABW3IuMERwuqyUf3u0=
+github.com/anhvanhoa/sf-proto v0.0.0-20251014151345-90d4bec00fcd h1:Kk0PuXli6YdiU5+Da6DNiDS6adW9yR1zDFOUHt/ZHyM=
+github.com/anhvanhoa/sf-proto v0.0.0-20251014151345-90d4bec00fcd/go.mod h1:fDjSJFXd2PoPiOod6qKRGVjurABW3IuMERwuqyUf3u0=
 github.com/antlr4-go/antlr/v4 v4.13.1 h1:SqQKkuVZ+zWkMMNkjy5FZe5mr5WURWnlpmOuzYWrPrQ=
 github.com/antlr4-go/antlr/v4 v4.13.1/go.mod h1:GKmUxMtwp6ZgGwZSva4eWPC5mS6vUAmOABFgjdkM7Nw=
 github.com/armon/go-metrics v0.4.1 h1:hR91U9KYmb6bLBYLQjyM+3j+rcd/UhE+G78SFnF8gJA=

@@ -21,5 +21,9 @@ func NewGetPermissionUsecase(permissionRepository repository.PermissionRepositor
 }
 
 func (u *GetPermissionUsecaseImpl) Execute(ctx context.Context, id string) (*entity.Permission, error) {
-	return u.permissionRepository.GetByID(ctx, id)
+	permission, err := u.permissionRepository.GetByID(ctx, id)
+	if err != nil {
+		return nil, ErrPermissionNotFound
+	}
+	return permission, nil
 }

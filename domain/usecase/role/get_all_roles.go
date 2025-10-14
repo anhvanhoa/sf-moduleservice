@@ -20,5 +20,9 @@ func NewGetAllRolesUsecase(roleRepo repository.RoleRepository) GetAllRolesUsecas
 }
 
 func (g *getAllRolesUsecase) Excute() ([]entity.Role, error) {
-	return g.roleRepo.GetAllRoles()
+	roles, err := g.roleRepo.GetAllRoles()
+	if err != nil {
+		return nil, ErrListRoles
+	}
+	return roles, nil
 }

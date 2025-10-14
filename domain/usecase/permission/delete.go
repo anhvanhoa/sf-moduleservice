@@ -20,5 +20,9 @@ func NewDeletePermissionUsecase(permissionRepository repository.PermissionReposi
 }
 
 func (u *DeletePermissionUsecaseImpl) Execute(ctx context.Context, id string) error {
-	return u.permissionRepository.Delete(ctx, id)
+	err := u.permissionRepository.Delete(ctx, id)
+	if err != nil {
+		return ErrDeletePermission
+	}
+	return nil
 }

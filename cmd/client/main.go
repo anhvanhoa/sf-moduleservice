@@ -125,6 +125,7 @@ func (c *RoleServiceClient) TestGetRoleById() {
 	fmt.Printf("Name: %s\n", resp.Role.Name)
 	fmt.Printf("Description: %s\n", resp.Role.Description)
 	fmt.Printf("Variant: %s\n", resp.Role.Variant)
+	fmt.Printf("Status: %s\n", resp.Role.Status)
 }
 
 func (c *RoleServiceClient) TestGetAllRoles() {
@@ -364,6 +365,410 @@ func (c *RoleServiceClient) TestDeletePermission() {
 	fmt.Printf("Permission deleted successfully\n")
 }
 
+// ================== Role Permission Service Tests ==================
+
+func (c *RoleServiceClient) TestCreateRolePermission() {
+	fmt.Println("\n=== Test Create Role Permission ===")
+
+	reader := bufio.NewReader(os.Stdin)
+
+	fmt.Print("Enter role ID: ")
+	roleId, _ := reader.ReadString('\n')
+	roleId = cleanInput(roleId)
+
+	fmt.Print("Enter permission ID: ")
+	permissionId, _ := reader.ReadString('\n')
+	permissionId = cleanInput(permissionId)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	resp, err := c.rolePermissionClient.CreateRolePermission(ctx, &proto_role_permission.CreateRolePermissionRequest{
+		RoleId:       roleId,
+		PermissionId: permissionId,
+	})
+	if err != nil {
+		fmt.Printf("Error calling CreateRolePermission: %v\n", err)
+		return
+	}
+
+	fmt.Printf("Create Role Permission result:\n")
+	fmt.Printf("Role ID: %s\n", resp.RolePermission.RoleId)
+	fmt.Printf("Permission ID: %s\n", resp.RolePermission.PermissionId)
+}
+
+func (c *RoleServiceClient) TestListRolePermissions() {
+	fmt.Println("\n=== Test List Role Permissions ===")
+
+	reader := bufio.NewReader(os.Stdin)
+
+	fmt.Print("Enter role ID (optional, press Enter to skip): ")
+	roleId, _ := reader.ReadString('\n')
+	roleId = cleanInput(roleId)
+
+	fmt.Print("Enter permission ID (optional, press Enter to skip): ")
+	permissionId, _ := reader.ReadString('\n')
+	permissionId = cleanInput(permissionId)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	req := &proto_role_permission.ListRolePermissionsRequest{}
+	if roleId != "" {
+		req.Filter = &proto_role_permission.RolePermissionFilter{
+			RoleId: roleId,
+		}
+	}
+	if permissionId != "" && req.Filter != nil {
+		req.Filter.PermissionId = permissionId
+	} else if permissionId != "" {
+		req.Filter = &proto_role_permission.RolePermissionFilter{
+			PermissionId: permissionId,
+		}
+	}
+
+	resp, err := c.rolePermissionClient.ListRolePermissions(ctx, req)
+	if err != nil {
+		fmt.Printf("Error calling ListRolePermissions: %v\n", err)
+		return
+	}
+
+	fmt.Printf("List Role Permissions result:\n")
+	fmt.Printf("Total Role Permissions: %d\n", len(resp.RolePermissions))
+	for i, rp := range resp.RolePermissions {
+		fmt.Printf("  [%d] Role ID: %s, Permission ID: %s\n", i+1, rp.RoleId, rp.PermissionId)
+	}
+}
+
+func (c *RoleServiceClient) TestDeleteRolePermission() {
+	fmt.Println("\n=== Test Delete Role Permission ===")
+
+	reader := bufio.NewReader(os.Stdin)
+
+	fmt.Print("Enter role ID: ")
+	roleId, _ := reader.ReadString('\n')
+	roleId = cleanInput(roleId)
+
+	fmt.Print("Enter permission ID: ")
+	permissionId, _ := reader.ReadString('\n')
+	permissionId = cleanInput(permissionId)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	_, err := c.rolePermissionClient.DeleteRolePermission(ctx, &proto_role_permission.DeleteRolePermissionRequest{
+		RoleId:       roleId,
+		PermissionId: permissionId,
+	})
+	if err != nil {
+		fmt.Printf("Error calling DeleteRolePermission: %v\n", err)
+		return
+	}
+
+	fmt.Printf("Delete Role Permission result:\n")
+	fmt.Printf("Role Permission deleted successfully\n")
+}
+
+// ================== Resource Permission Service Tests ==================
+
+func (c *RoleServiceClient) TestCreateResourcePermission() {
+	fmt.Println("\n=== Test Create Resource Permission ===")
+
+	reader := bufio.NewReader(os.Stdin)
+
+	fmt.Print("Enter user ID: ")
+	userId, _ := reader.ReadString('\n')
+	userId = cleanInput(userId)
+
+	fmt.Print("Enter resource type: ")
+	resourceType, _ := reader.ReadString('\n')
+	resourceType = cleanInput(resourceType)
+
+	fmt.Print("Enter resource ID: ")
+	resourceId, _ := reader.ReadString('\n')
+	resourceId = cleanInput(resourceId)
+
+	fmt.Print("Enter action: ")
+	action, _ := reader.ReadString('\n')
+	action = cleanInput(action)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	resp, err := c.resourcePermissionClient.CreateResourcePermission(ctx, &proto_resource_permission.CreateResourcePermissionRequest{
+		UserId:       userId,
+		ResourceType: resourceType,
+		ResourceId:   resourceId,
+		Action:       action,
+	})
+	if err != nil {
+		fmt.Printf("Error calling CreateResourcePermission: %v\n", err)
+		return
+	}
+
+	fmt.Printf("Create Resource Permission result:\n")
+	fmt.Printf("ID: %s\n", resp.ResourcePermission.Id)
+	fmt.Printf("User ID: %s\n", resp.ResourcePermission.UserId)
+	fmt.Printf("Resource Type: %s\n", resp.ResourcePermission.ResourceType)
+	fmt.Printf("Resource ID: %s\n", resp.ResourcePermission.ResourceId)
+	fmt.Printf("Action: %s\n", resp.ResourcePermission.Action)
+}
+
+func (c *RoleServiceClient) TestGetResourcePermission() {
+	fmt.Println("\n=== Test Get Resource Permission ===")
+
+	reader := bufio.NewReader(os.Stdin)
+
+	fmt.Print("Enter resource permission ID: ")
+	id, _ := reader.ReadString('\n')
+	id = cleanInput(id)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	resp, err := c.resourcePermissionClient.GetResourcePermission(ctx, &proto_resource_permission.GetResourcePermissionRequest{
+		Id: id,
+	})
+	if err != nil {
+		fmt.Printf("Error calling GetResourcePermission: %v\n", err)
+		return
+	}
+
+	fmt.Printf("Get Resource Permission result:\n")
+	fmt.Printf("ID: %s\n", resp.ResourcePermission.Id)
+	fmt.Printf("User ID: %s\n", resp.ResourcePermission.UserId)
+	fmt.Printf("Resource Type: %s\n", resp.ResourcePermission.ResourceType)
+	fmt.Printf("Resource ID: %s\n", resp.ResourcePermission.ResourceId)
+	fmt.Printf("Action: %s\n", resp.ResourcePermission.Action)
+}
+
+func (c *RoleServiceClient) TestListResourcePermissions() {
+	fmt.Println("\n=== Test List Resource Permissions ===")
+
+	reader := bufio.NewReader(os.Stdin)
+
+	fmt.Print("Enter user ID (optional, press Enter to skip): ")
+	userId, _ := reader.ReadString('\n')
+	userId = cleanInput(userId)
+
+	fmt.Print("Enter resource type (optional, press Enter to skip): ")
+	resourceType, _ := reader.ReadString('\n')
+	resourceType = cleanInput(resourceType)
+
+	fmt.Print("Enter resource ID (optional, press Enter to skip): ")
+	resourceId, _ := reader.ReadString('\n')
+	resourceId = cleanInput(resourceId)
+
+	fmt.Print("Enter action (optional, press Enter to skip): ")
+	action, _ := reader.ReadString('\n')
+	action = cleanInput(action)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	req := &proto_resource_permission.ListResourcePermissionsRequest{}
+	if userId != "" || resourceType != "" || resourceId != "" || action != "" {
+		req.Filter = &proto_resource_permission.ResourcePermissionFilter{}
+		if userId != "" {
+			req.Filter.UserId = userId
+		}
+		if resourceType != "" {
+			req.Filter.ResourceType = resourceType
+		}
+		if resourceId != "" {
+			req.Filter.ResourceId = resourceId
+		}
+		if action != "" {
+			req.Filter.Action = action
+		}
+	}
+
+	resp, err := c.resourcePermissionClient.ListResourcePermissions(ctx, req)
+	if err != nil {
+		fmt.Printf("Error calling ListResourcePermissions: %v\n", err)
+		return
+	}
+
+	fmt.Printf("List Resource Permissions result:\n")
+	fmt.Printf("Total Resource Permissions: %d\n", len(resp.ResourcePermissions))
+	for i, rp := range resp.ResourcePermissions {
+		fmt.Printf("  [%d] ID: %s, User ID: %s, Resource Type: %s, Resource ID: %s, Action: %s\n", i+1, rp.Id, rp.UserId, rp.ResourceType, rp.ResourceId, rp.Action)
+	}
+}
+
+func (c *RoleServiceClient) TestUpdateResourcePermission() {
+	fmt.Println("\n=== Test Update Resource Permission ===")
+
+	reader := bufio.NewReader(os.Stdin)
+
+	fmt.Print("Enter resource permission ID: ")
+	id, _ := reader.ReadString('\n')
+	id = cleanInput(id)
+
+	fmt.Print("Enter new user ID: ")
+	userId, _ := reader.ReadString('\n')
+	userId = cleanInput(userId)
+
+	fmt.Print("Enter new resource type: ")
+	resourceType, _ := reader.ReadString('\n')
+	resourceType = cleanInput(resourceType)
+
+	fmt.Print("Enter new resource ID: ")
+	resourceId, _ := reader.ReadString('\n')
+	resourceId = cleanInput(resourceId)
+
+	fmt.Print("Enter new action: ")
+	action, _ := reader.ReadString('\n')
+	action = cleanInput(action)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	resp, err := c.resourcePermissionClient.UpdateResourcePermission(ctx, &proto_resource_permission.UpdateResourcePermissionRequest{
+		Id:           id,
+		UserId:       userId,
+		ResourceType: resourceType,
+		ResourceId:   resourceId,
+		Action:       action,
+	})
+	if err != nil {
+		fmt.Printf("Error calling UpdateResourcePermission: %v\n", err)
+		return
+	}
+
+	fmt.Printf("Update Resource Permission result:\n")
+	fmt.Printf("ID: %s\n", resp.ResourcePermission.Id)
+	fmt.Printf("User ID: %s\n", resp.ResourcePermission.UserId)
+	fmt.Printf("Resource Type: %s\n", resp.ResourcePermission.ResourceType)
+	fmt.Printf("Resource ID: %s\n", resp.ResourcePermission.ResourceId)
+	fmt.Printf("Action: %s\n", resp.ResourcePermission.Action)
+}
+
+func (c *RoleServiceClient) TestDeleteResourcePermission() {
+	fmt.Println("\n=== Test Delete Resource Permission ===")
+
+	reader := bufio.NewReader(os.Stdin)
+
+	fmt.Print("Enter resource permission ID to delete: ")
+	id, _ := reader.ReadString('\n')
+	id = cleanInput(id)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	_, err := c.resourcePermissionClient.DeleteResourcePermission(ctx, &proto_resource_permission.DeleteResourcePermissionRequest{
+		Id: id,
+	})
+	if err != nil {
+		fmt.Printf("Error calling DeleteResourcePermission: %v\n", err)
+		return
+	}
+
+	fmt.Printf("Delete Resource Permission result:\n")
+	fmt.Printf("Resource Permission deleted successfully\n")
+}
+
+// ================== User Role Service Tests ==================
+
+func (c *RoleServiceClient) TestCreateUserRole() {
+	fmt.Println("\n=== Test Create User Role ===")
+
+	reader := bufio.NewReader(os.Stdin)
+
+	fmt.Print("Enter user ID: ")
+	userId, _ := reader.ReadString('\n')
+	userId = cleanInput(userId)
+
+	fmt.Print("Enter role ID: ")
+	roleId, _ := reader.ReadString('\n')
+	roleId = cleanInput(roleId)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	resp, err := c.userRoleClient.CreateUserRole(ctx, &proto_user_role.CreateUserRoleRequest{
+		UserId: userId,
+		RoleId: roleId,
+	})
+	if err != nil {
+		fmt.Printf("Error calling CreateUserRole: %v\n", err)
+		return
+	}
+
+	fmt.Printf("Create User Role result:\n")
+	fmt.Printf("User ID: %s\n", resp.Data.UserId)
+	fmt.Printf("Role ID: %s\n", resp.Data.RoleId)
+}
+
+func (c *RoleServiceClient) TestListUserRoles() {
+	fmt.Println("\n=== Test List User Roles ===")
+
+	reader := bufio.NewReader(os.Stdin)
+
+	fmt.Print("Enter user ID (optional, press Enter to skip): ")
+	userId, _ := reader.ReadString('\n')
+	userId = cleanInput(userId)
+
+	fmt.Print("Enter role ID (optional, press Enter to skip): ")
+	roleId, _ := reader.ReadString('\n')
+	roleId = cleanInput(roleId)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	req := &proto_user_role.ListUserRolesRequest{}
+	if userId != "" || roleId != "" {
+		req.Filter = &proto_user_role.UserRoleFilter{}
+		if userId != "" {
+			req.Filter.UserId = userId
+		}
+		if roleId != "" {
+			req.Filter.RoleId = roleId
+		}
+	}
+
+	resp, err := c.userRoleClient.ListUserRoles(ctx, req)
+	if err != nil {
+		fmt.Printf("Error calling ListUserRoles: %v\n", err)
+		return
+	}
+
+	fmt.Printf("List User Roles result:\n")
+	fmt.Printf("Total User Roles: %d\n", len(resp.UserRoles))
+	for i, ur := range resp.UserRoles {
+		fmt.Printf("  [%d] User ID: %s, Role ID: %s\n", i+1, ur.UserId, ur.RoleId)
+	}
+}
+
+func (c *RoleServiceClient) TestDeleteUserRole() {
+	fmt.Println("\n=== Test Delete User Role ===")
+
+	reader := bufio.NewReader(os.Stdin)
+
+	fmt.Print("Enter user ID: ")
+	userId, _ := reader.ReadString('\n')
+	userId = cleanInput(userId)
+
+	fmt.Print("Enter role ID: ")
+	roleId, _ := reader.ReadString('\n')
+	roleId = cleanInput(roleId)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	_, err := c.userRoleClient.DeleteUserRole(ctx, &proto_user_role.DeleteUserRoleRequest{
+		UserId: userId,
+		RoleId: roleId,
+	})
+	if err != nil {
+		fmt.Printf("Error calling DeleteUserRole: %v\n", err)
+		return
+	}
+
+	fmt.Printf("Delete User Role result:\n")
+	fmt.Printf("User Role deleted successfully\n")
+}
+
 // ================== Menu Functions ==================
 
 func printMainMenu() {
@@ -422,10 +827,8 @@ func printResourcePermissionMenu() {
 func printUserRoleMenu() {
 	fmt.Println("\n=== User Role Service ===")
 	fmt.Println("1. Create User Role")
-	fmt.Println("2. Get User Role")
-	fmt.Println("3. List User Roles")
-	fmt.Println("4. Update User Role")
-	fmt.Println("5. Delete User Role")
+	fmt.Println("2. List User Roles")
+	fmt.Println("3. Delete User Role")
 	fmt.Println("0. Back to Main Menu")
 	fmt.Print("Enter your choice: ")
 }
@@ -516,11 +919,11 @@ func main() {
 
 				switch subChoice {
 				case "1":
-					fmt.Println("Create Role Permission - Not implemented yet")
+					client.TestCreateRolePermission()
 				case "2":
-					fmt.Println("List Role Permissions - Not implemented yet")
+					client.TestListRolePermissions()
 				case "3":
-					fmt.Println("Delete Role Permission - Not implemented yet")
+					client.TestDeleteRolePermission()
 				case "0":
 				default:
 					fmt.Println("Invalid choice. Please try again.")
@@ -539,15 +942,15 @@ func main() {
 
 				switch subChoice {
 				case "1":
-					fmt.Println("Create Resource Permission - Not implemented yet")
+					client.TestCreateResourcePermission()
 				case "2":
-					fmt.Println("Get Resource Permission - Not implemented yet")
+					client.TestGetResourcePermission()
 				case "3":
-					fmt.Println("List Resource Permissions - Not implemented yet")
+					client.TestListResourcePermissions()
 				case "4":
-					fmt.Println("Update Resource Permission - Not implemented yet")
+					client.TestUpdateResourcePermission()
 				case "5":
-					fmt.Println("Delete Resource Permission - Not implemented yet")
+					client.TestDeleteResourcePermission()
 				case "0":
 				default:
 					fmt.Println("Invalid choice. Please try again.")
@@ -566,15 +969,11 @@ func main() {
 
 				switch subChoice {
 				case "1":
-					fmt.Println("Create User Role - Not implemented yet")
+					client.TestCreateUserRole()
 				case "2":
-					fmt.Println("Get User Role - Not implemented yet")
+					client.TestListUserRoles()
 				case "3":
-					fmt.Println("List User Roles - Not implemented yet")
-				case "4":
-					fmt.Println("Update User Role - Not implemented yet")
-				case "5":
-					fmt.Println("Delete User Role - Not implemented yet")
+					client.TestDeleteUserRole()
 				case "0":
 				default:
 					fmt.Println("Invalid choice. Please try again.")

@@ -20,5 +20,9 @@ func NewExistsUserRoleUsecase(userRoleRepository repository.UserRoleRepository) 
 }
 
 func (u *ExistsUserRoleUsecaseImpl) Execute(ctx context.Context, userID, roleID string) (bool, error) {
-	return u.userRoleRepository.Exists(ctx, userID, roleID)
+	isExist, err := u.userRoleRepository.Exists(ctx, userID, roleID)
+	if err != nil {
+		return false, ErrExistsUserRole
+	}
+	return isExist, nil
 }

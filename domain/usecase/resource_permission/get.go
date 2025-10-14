@@ -21,5 +21,9 @@ func NewGetResourcePermissionUsecase(resourcePermissionRepository repository.Res
 }
 
 func (u *GetResourcePermissionUsecaseImpl) Execute(ctx context.Context, id string) (*entity.ResourcePermission, error) {
-	return u.resourcePermissionRepository.GetByID(ctx, id)
+	resourcePermission, err := u.resourcePermissionRepository.GetByID(ctx, id)
+	if err != nil {
+		return nil, ErrResourcePermissionNotFound
+	}
+	return resourcePermission, nil
 }

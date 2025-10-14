@@ -20,5 +20,9 @@ func NewCountByResourceUsecase(permissionRepository repository.PermissionReposit
 }
 
 func (u *CountByResourceUsecaseImpl) Execute(ctx context.Context, resource string) (int64, error) {
-	return u.permissionRepository.CountByResource(ctx, resource)
+	count, err := u.permissionRepository.CountByResource(ctx, resource)
+	if err != nil {
+		return 0, ErrCountByResource
+	}
+	return count, nil
 }

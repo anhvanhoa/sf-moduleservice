@@ -23,6 +23,9 @@ func NewUpdateRoleUsecase(roleRepo repository.RoleRepository) UpdateRoleUsecase 
 func (u *updateRoleUsecase) Excute(id string, role entity.Role) (entity.Role, error) {
 	now := time.Now()
 	role.UpdatedAt = &now
-
-	return u.roleRepo.UpdateRole(id, role)
+	updatedRole, err := u.roleRepo.UpdateRole(id, role)
+	if err != nil {
+		return entity.Role{}, ErrUpdateRole
+	}
+	return updatedRole, nil
 }

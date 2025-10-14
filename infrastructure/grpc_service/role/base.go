@@ -7,6 +7,7 @@ import (
 	"module-service/infrastructure/repo"
 
 	proto_role "github.com/anhvanhoa/sf-proto/gen/role/v1"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 type roleService struct {
@@ -98,8 +99,19 @@ func (s *roleService) createProtoRoles(roles []entity.Role) []*proto_role.Role {
 }
 
 func (s *roleService) createProtoRole(role entity.Role) *proto_role.Role {
-	return &proto_role.Role{
-		Id:   role.ID,
-		Name: role.Name,
+	r := &proto_role.Role{
+		Id:          role.ID,
+		Name:        role.Name,
+		Description: role.Description,
+		Variant:     role.Variant,
+		Status:      string(role.Status),
+		CreatedBy:   role.CreatedBy,
+		CreatedAt:   timestamppb.New(role.CreatedAt),
 	}
+
+	if role.UpdatedAt != nil {
+		r.UpdatedAt = timestamppb.New(*role.UpdatedAt)
+	}
+
+	return r
 }

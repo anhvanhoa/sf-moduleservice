@@ -20,5 +20,9 @@ func NewDeleteByResourceAndActionUsecase(permissionRepository repository.Permiss
 }
 
 func (u *DeleteByResourceAndActionUsecaseImpl) Execute(ctx context.Context, resource, action string) error {
-	return u.permissionRepository.DeleteByResourceAndAction(ctx, resource, action)
+	err := u.permissionRepository.DeleteByResourceAndAction(ctx, resource, action)
+	if err != nil {
+		return ErrDeleteByResourceAndAction
+	}
+	return nil
 }

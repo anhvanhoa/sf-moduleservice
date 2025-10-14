@@ -20,5 +20,9 @@ func NewDeleteUserRoleUsecase(userRoleRepository repository.UserRoleRepository) 
 }
 
 func (u *DeleteUserRoleUsecaseImpl) Execute(ctx context.Context, userID, roleID string) error {
-	return u.userRoleRepository.Delete(ctx, userID, roleID)
+	err := u.userRoleRepository.Delete(ctx, userID, roleID)
+	if err != nil {
+		return ErrDeleteUserRole
+	}
+	return nil
 }

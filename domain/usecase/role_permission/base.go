@@ -6,11 +6,12 @@ import (
 	"module-service/domain/repository"
 
 	"github.com/anhvanhoa/service-core/common"
+	"github.com/anhvanhoa/service-core/utils"
 )
 
 type RolePermissionUsecaseI interface {
 	Create(ctx context.Context, rolePermission *entity.RolePermission) error
-	List(ctx context.Context, pagination common.Pagination, filter entity.RolePermissionFilter) ([]*entity.RolePermission, int64, error)
+	List(ctx context.Context, pagination common.Pagination, filter entity.RolePermissionFilter) (common.PaginationResult[*entity.RolePermission], error)
 	Delete(ctx context.Context, roleID, permissionID string) error
 	DeleteByPermissionID(ctx context.Context, permissionID string) error
 	Count(ctx context.Context) (int64, error)
@@ -30,10 +31,10 @@ type RolePermissionUsecaseImpl struct {
 	existsRolePermissionUsecase ExistsRolePermissionUsecase
 }
 
-func NewRolePermissionUsecase(rolePermissionRepository repository.RolePermissionRepository) RolePermissionUsecaseI {
+func NewRolePermissionUsecase(rolePermissionRepository repository.RolePermissionRepository, helper utils.Helper) RolePermissionUsecaseI {
 	return &RolePermissionUsecaseImpl{
 		createRolePermissionUsecase: NewCreateRolePermissionUsecase(rolePermissionRepository),
-		listRolePermissionsUsecase:  NewListRolePermissionsUsecase(rolePermissionRepository),
+		listRolePermissionsUsecase:  NewListRolePermissionsUsecase(rolePermissionRepository, helper),
 		deleteRolePermissionUsecase: NewDeleteRolePermissionUsecase(rolePermissionRepository),
 		deleteByPermissionIDUsecase: NewDeleteByPermissionIDUsecase(rolePermissionRepository),
 		countRolePermissionsUsecase: NewCountRolePermissionsUsecase(rolePermissionRepository),
@@ -47,7 +48,7 @@ func (u *RolePermissionUsecaseImpl) Create(ctx context.Context, rolePermission *
 	return u.createRolePermissionUsecase.Execute(ctx, rolePermission)
 }
 
-func (u *RolePermissionUsecaseImpl) List(ctx context.Context, pagination common.Pagination, filter entity.RolePermissionFilter) ([]*entity.RolePermission, int64, error) {
+func (u *RolePermissionUsecaseImpl) List(ctx context.Context, pagination common.Pagination, filter entity.RolePermissionFilter) (common.PaginationResult[*entity.RolePermission], error) {
 	return u.listRolePermissionsUsecase.Execute(ctx, pagination, filter)
 }
 

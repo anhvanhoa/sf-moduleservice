@@ -20,5 +20,9 @@ func NewExistsResourcePermissionUsecase(resourcePermissionRepository repository.
 }
 
 func (u *ExistsResourcePermissionUsecaseImpl) Execute(ctx context.Context, userID, resourceType, resourceID, action string) (bool, error) {
-	return u.resourcePermissionRepository.Exists(ctx, userID, resourceType, resourceID, action)
+	isExists, err := u.resourcePermissionRepository.Exists(ctx, userID, resourceType, resourceID, action)
+	if err != nil {
+		return false, ErrExistsResourcePermission
+	}
+	return isExists, nil
 }

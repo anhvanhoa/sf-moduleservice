@@ -5,6 +5,7 @@ import (
 	"module-service/domain/usecase/user_role"
 	"module-service/infrastructure/repo"
 
+	"github.com/anhvanhoa/service-core/utils"
 	proto_user_role "github.com/anhvanhoa/sf-proto/gen/user_role/v1"
 )
 
@@ -13,9 +14,9 @@ type userRoleService struct {
 	userRoleUsecase user_role.UserRoleUsecaseI
 }
 
-func NewUserRoleServer(repos repo.Repositories) proto_user_role.UserRoleServiceServer {
+func NewUserRoleServer(repos repo.Repositories, helper utils.Helper) proto_user_role.UserRoleServiceServer {
 	userRoleRepo := repos.UserRoleRepository()
-	userRoleUC := user_role.NewUserRoleUsecase(userRoleRepo)
+	userRoleUC := user_role.NewUserRoleUsecase(userRoleRepo, helper)
 	return &userRoleService{
 		userRoleUsecase: userRoleUC,
 	}

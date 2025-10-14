@@ -5,6 +5,7 @@ import (
 	"module-service/domain/usecase/permission"
 	"module-service/infrastructure/repo"
 
+	"github.com/anhvanhoa/service-core/utils"
 	proto_permission "github.com/anhvanhoa/sf-proto/gen/permission/v1"
 )
 
@@ -13,9 +14,9 @@ type permissionService struct {
 	permissionUsecase permission.PermissionUsecaseI
 }
 
-func NewPermissionServer(repos repo.Repositories) proto_permission.PermissionServiceServer {
+func NewPermissionServer(repos repo.Repositories, helper utils.Helper) proto_permission.PermissionServiceServer {
 	permissionRepo := repos.PermissionRepository()
-	permissionUC := permission.NewPermissionUsecase(permissionRepo)
+	permissionUC := permission.NewPermissionUsecase(permissionRepo, helper)
 	return &permissionService{
 		permissionUsecase: permissionUC,
 	}

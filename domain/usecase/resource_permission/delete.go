@@ -20,5 +20,9 @@ func NewDeleteResourcePermissionUsecase(resourcePermissionRepository repository.
 }
 
 func (u *DeleteResourcePermissionUsecaseImpl) Execute(ctx context.Context, id string) error {
-	return u.resourcePermissionRepository.Delete(ctx, id)
+	err := u.resourcePermissionRepository.Delete(ctx, id)
+	if err != nil {
+		return ErrDeleteResourcePermission
+	}
+	return nil
 }

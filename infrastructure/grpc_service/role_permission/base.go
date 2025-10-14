@@ -5,6 +5,7 @@ import (
 	"module-service/domain/usecase/role_permission"
 	"module-service/infrastructure/repo"
 
+	"github.com/anhvanhoa/service-core/utils"
 	proto_role_permission "github.com/anhvanhoa/sf-proto/gen/role_permission/v1"
 )
 
@@ -13,9 +14,9 @@ type rolePermissionService struct {
 	rolePermissionUsecase role_permission.RolePermissionUsecaseI
 }
 
-func NewRolePermissionServer(repos repo.Repositories) proto_role_permission.RolePermissionServiceServer {
+func NewRolePermissionServer(repos repo.Repositories, helper utils.Helper) proto_role_permission.RolePermissionServiceServer {
 	rolePermissionRepo := repos.RolePermissionRepository()
-	rolePermissionUC := role_permission.NewRolePermissionUsecase(rolePermissionRepo)
+	rolePermissionUC := role_permission.NewRolePermissionUsecase(rolePermissionRepo, helper)
 	return &rolePermissionService{
 		rolePermissionUsecase: rolePermissionUC,
 	}

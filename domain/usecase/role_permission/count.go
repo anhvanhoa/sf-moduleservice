@@ -20,5 +20,9 @@ func NewCountRolePermissionsUsecase(rolePermissionRepository repository.RolePerm
 }
 
 func (u *CountRolePermissionsUsecaseImpl) Execute(ctx context.Context) (int64, error) {
-	return u.rolePermissionRepository.Count(ctx)
+	count, err := u.rolePermissionRepository.Count(ctx)
+	if err != nil {
+		return 0, ErrCountRolePermissions
+	}
+	return count, nil
 }

@@ -20,5 +20,9 @@ func NewCountByUserIDUsecase(resourcePermissionRepository repository.ResourcePer
 }
 
 func (u *CountByUserIDUsecaseImpl) Execute(ctx context.Context, userID string) (int64, error) {
-	return u.resourcePermissionRepository.CountByUserID(ctx, userID)
+	count, err := u.resourcePermissionRepository.CountByUserID(ctx, userID)
+	if err != nil {
+		return 0, ErrCountByUserID
+	}
+	return count, nil
 }

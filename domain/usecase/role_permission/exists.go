@@ -20,5 +20,9 @@ func NewExistsRolePermissionUsecase(rolePermissionRepository repository.RolePerm
 }
 
 func (u *ExistsRolePermissionUsecaseImpl) Execute(ctx context.Context, roleID, permissionID string) (bool, error) {
-	return u.rolePermissionRepository.Exists(ctx, roleID, permissionID)
+	exists, err := u.rolePermissionRepository.Exists(ctx, roleID, permissionID)
+	if err != nil {
+		return false, ErrExistsRolePermission
+	}
+	return exists, nil
 }

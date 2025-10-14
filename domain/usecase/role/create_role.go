@@ -20,5 +20,9 @@ func NewCreateRoleUsecase(roleRepo repository.RoleRepository) CreateRoleUsecase 
 }
 
 func (c *createRoleUsecase) Excute(role entity.Role) error {
-	return c.roleRepo.CreateRole(role)
+	err := c.roleRepo.CreateRole(role)
+	if err != nil {
+		return ErrCreateRole
+	}
+	return nil
 }

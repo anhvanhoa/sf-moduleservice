@@ -5,6 +5,7 @@ import (
 	"module-service/domain/entity"
 
 	"github.com/anhvanhoa/service-core/common"
+	proto_common "github.com/anhvanhoa/sf-proto/gen/common/v1"
 	proto_resource_permission "github.com/anhvanhoa/sf-proto/gen/resource_permission/v1"
 )
 
@@ -21,17 +22,23 @@ func (s *resourcePermissionService) ListResourcePermissions(ctx context.Context,
 		filter.ResourceID = req.Filter.ResourceId
 		filter.Action = req.Filter.Action
 	}
-	resourcePermissions, _, err := s.resourcePermissionUsecase.List(ctx, pagination, filter)
+	result, err := s.resourcePermissionUsecase.List(ctx, pagination, filter)
 	if err != nil {
 		return nil, err
 	}
 
-	protoResourcePermissions := make([]*proto_resource_permission.ResourcePermission, len(resourcePermissions))
-	for i, rp := range resourcePermissions {
+	protoResourcePermissions := make([]*proto_resource_permission.ResourcePermission, len(result.Data))
+	for i, rp := range result.Data {
 		protoResourcePermissions[i] = s.convertEntityToProtoResourcePermission(rp)
 	}
 
 	return &proto_resource_permission.ListResourcePermissionsResponse{
 		ResourcePermissions: protoResourcePermissions,
+		Pagination: &proto_common.PaginationResponse{
+			Page:       int32(result.Page),
+			PageSize:   int32(result.PageSize),
+			TotalPages: int32(result.TotalPages),
+			Total:      int32(result.Total),
+		},
 	}, nil
 }

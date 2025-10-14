@@ -36,11 +36,11 @@ func StartGRPCServer() {
 	}
 	discovery.Register()
 
-	permissionServer := permission_service.NewPermissionServer(app.Repos)
+	permissionServer := permission_service.NewPermissionServer(app.Repos, app.Helper)
 	roleServer := role_service.NewRoleServer(app.Repos)
-	rolePermissionServer := role_permission_service.NewRolePermissionServer(app.Repos)
-	resourcePermissionServer := resource_permission_service.NewResourcePermissionServer(app.Repos)
-	userRoleServer := user_role_service.NewUserRoleServer(app.Repos)
+	rolePermissionServer := role_permission_service.NewRolePermissionServer(app.Repos, app.Helper)
+	resourcePermissionServer := resource_permission_service.NewResourcePermissionServer(app.Repos, app.Helper)
+	userRoleServer := user_role_service.NewUserRoleServer(app.Repos, app.Helper)
 	grpcSrv := grpcservice.NewGRPCServer(env, log, permissionServer, roleServer, rolePermissionServer, resourcePermissionServer, userRoleServer)
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()

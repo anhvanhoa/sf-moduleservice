@@ -6,11 +6,12 @@ import (
 	"module-service/domain/repository"
 
 	"github.com/anhvanhoa/service-core/common"
+	"github.com/anhvanhoa/service-core/utils"
 )
 
 type UserRoleUsecaseI interface {
 	Create(ctx context.Context, userRole *entity.UserRole) error
-	List(ctx context.Context, pagination common.Pagination, filter entity.UserRoleFilter) ([]*entity.UserRole, int64, error)
+	List(ctx context.Context, pagination common.Pagination, filter entity.UserRoleFilter) (common.PaginationResult[*entity.UserRole], error)
 	Delete(ctx context.Context, userID, roleID string) error
 	DeleteByUserID(ctx context.Context, userID string) error
 	DeleteByRoleID(ctx context.Context, roleID string) error
@@ -32,10 +33,10 @@ type UserRoleUsecaseImpl struct {
 	existsUserRoleUsecase ExistsUserRoleUsecase
 }
 
-func NewUserRoleUsecase(userRoleRepository repository.UserRoleRepository) UserRoleUsecaseI {
+func NewUserRoleUsecase(userRoleRepository repository.UserRoleRepository, helper utils.Helper) UserRoleUsecaseI {
 	return &UserRoleUsecaseImpl{
 		createUserRoleUsecase: NewCreateUserRoleUsecase(userRoleRepository),
-		listUserRolesUsecase:  NewListUserRolesUsecase(userRoleRepository),
+		listUserRolesUsecase:  NewListUserRolesUsecase(userRoleRepository, helper),
 		deleteUserRoleUsecase: NewDeleteUserRoleUsecase(userRoleRepository),
 		deleteByUserIDUsecase: NewDeleteByUserIDUsecase(userRoleRepository),
 		deleteByRoleIDUsecase: NewDeleteByRoleIDUsecase(userRoleRepository),
@@ -50,7 +51,7 @@ func (u *UserRoleUsecaseImpl) Create(ctx context.Context, userRole *entity.UserR
 	return u.createUserRoleUsecase.Execute(ctx, userRole)
 }
 
-func (u *UserRoleUsecaseImpl) List(ctx context.Context, pagination common.Pagination, filter entity.UserRoleFilter) ([]*entity.UserRole, int64, error) {
+func (u *UserRoleUsecaseImpl) List(ctx context.Context, pagination common.Pagination, filter entity.UserRoleFilter) (common.PaginationResult[*entity.UserRole], error) {
 	return u.listUserRolesUsecase.Execute(ctx, pagination, filter)
 }
 

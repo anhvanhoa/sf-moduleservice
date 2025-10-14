@@ -11,10 +11,11 @@ import (
 )
 
 type Application struct {
-	Env   *Env
-	DB    *pg.DB
-	Log   *log.LogGRPCImpl
-	Repos repo.Repositories
+	Env    *Env
+	DB     *pg.DB
+	Log    *log.LogGRPCImpl
+	Repos  repo.Repositories
+	Helper utils.Helper
 }
 
 func App() *Application {
@@ -32,9 +33,10 @@ func App() *Application {
 	repos := repo.NewRepositories(db, helper)
 
 	return &Application{
-		Env:   &env,
-		DB:    db,
-		Log:   log,
-		Repos: repos,
+		Env:    &env,
+		DB:     db,
+		Log:    log,
+		Repos:  repos,
+		Helper: helper,
 	}
 }

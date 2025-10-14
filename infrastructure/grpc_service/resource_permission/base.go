@@ -5,6 +5,7 @@ import (
 	"module-service/domain/usecase/resource_permission"
 	"module-service/infrastructure/repo"
 
+	"github.com/anhvanhoa/service-core/utils"
 	proto_resource_permission "github.com/anhvanhoa/sf-proto/gen/resource_permission/v1"
 )
 
@@ -13,9 +14,9 @@ type resourcePermissionService struct {
 	resourcePermissionUsecase resource_permission.ResourcePermissionUsecaseI
 }
 
-func NewResourcePermissionServer(repos repo.Repositories) proto_resource_permission.ResourcePermissionServiceServer {
+func NewResourcePermissionServer(repos repo.Repositories, helper utils.Helper) proto_resource_permission.ResourcePermissionServiceServer {
 	resourcePermissionRepo := repos.ResourcePermissionRepository()
-	resourcePermissionUC := resource_permission.NewResourcePermissionUsecase(resourcePermissionRepo)
+	resourcePermissionUC := resource_permission.NewResourcePermissionUsecase(resourcePermissionRepo, helper)
 	return &resourcePermissionService{
 		resourcePermissionUsecase: resourcePermissionUC,
 	}

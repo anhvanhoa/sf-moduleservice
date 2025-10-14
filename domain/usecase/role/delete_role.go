@@ -19,5 +19,9 @@ func NewDeleteRoleUsecase(roleRepo repository.RoleRepository) DeleteRoleUsecase 
 }
 
 func (d *deleteRoleUsecase) Excute(id string) error {
-	return d.roleRepo.DeleteByID(id)
+	err := d.roleRepo.DeleteByID(id)
+	if err != nil {
+		return ErrDeleteRole
+	}
+	return nil
 }
