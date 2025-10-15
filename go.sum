@@ -13,6 +13,10 @@ github.com/alecthomas/units v0.0.0-20190717042225-c3de453c63f4/go.mod h1:ybxpYRF
 github.com/alecthomas/units v0.0.0-20190924025748-f65c72e2690d/go.mod h1:rBZYJk541a8SKzHPHnH3zbiI+7dagKZ0cgpgrD7Fyho=
 github.com/anhvanhoa/service-core v0.0.0-20251008083007-3a4d96fe5f88 h1:i9BB89ByXU16prO/iOKbWxrKi9lQtTmkT1MQTYN4oaI=
 github.com/anhvanhoa/service-core v0.0.0-20251008083007-3a4d96fe5f88/go.mod h1:OE5O2WZPf9uv7mwzYPV+x7gD2wxdlsrrPOTOTHT4Imw=
+github.com/anhvanhoa/service-core v0.0.0-20251015043816-73459acc1a5e h1:IVAMUmlN+6zehUiZXKOUdW4sDEu9nXn9+yPDZK2B4Hw=
+github.com/anhvanhoa/service-core v0.0.0-20251015043816-73459acc1a5e/go.mod h1:OE5O2WZPf9uv7mwzYPV+x7gD2wxdlsrrPOTOTHT4Imw=
+github.com/anhvanhoa/service-core v0.0.0-20251015075305-db4642d848ba h1:DAGpKwHup3JGfUR+wDkoQiQCNfX8NB0aycmKOVIvC5g=
+github.com/anhvanhoa/service-core v0.0.0-20251015075305-db4642d848ba/go.mod h1:OE5O2WZPf9uv7mwzYPV+x7gD2wxdlsrrPOTOTHT4Imw=
 github.com/anhvanhoa/sf-proto v0.0.0-20251014151345-90d4bec00fcd h1:Kk0PuXli6YdiU5+Da6DNiDS6adW9yR1zDFOUHt/ZHyM=
 github.com/anhvanhoa/sf-proto v0.0.0-20251014151345-90d4bec00fcd/go.mod h1:fDjSJFXd2PoPiOod6qKRGVjurABW3IuMERwuqyUf3u0=
 github.com/antlr4-go/antlr/v4 v4.13.1 h1:SqQKkuVZ+zWkMMNkjy5FZe5mr5WURWnlpmOuzYWrPrQ=

@@ -3,7 +3,7 @@ module module-service
 go 1.24.6
 
 require (
-	github.com/anhvanhoa/service-core v0.0.0-20251008083007-3a4d96fe5f88
+	github.com/anhvanhoa/service-core v0.0.0-20251015075305-db4642d848ba
 	github.com/anhvanhoa/sf-proto v0.0.0-20251014151345-90d4bec00fcd
 	github.com/go-pg/pg/v10 v10.15.0
 	go.uber.org/zap v1.27.0
