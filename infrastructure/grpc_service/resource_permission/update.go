@@ -23,7 +23,7 @@ func (s *resourcePermissionService) convertUpdateRequestToEntity(req *proto_reso
 		ID:           req.Id,
 		UserID:       req.UserId,
 		ResourceType: req.ResourceType,
-		ResourceID:   req.ResourceId,
+		ResourceData: req.ResourceData,
 		Action:       req.Action,
 	}
 }

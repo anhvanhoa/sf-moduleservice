@@ -11,4 +11,5 @@ var (
 	ErrDeletePermission          = oops.New("Lỗi khi xóa quyền")
 	ErrDeleteByResourceAndAction = oops.New("Lỗi khi xóa quyền theo resource và action")
 	ErrCountByResource           = oops.New("Lỗi khi đếm số lượng quyền theo resource")
+	ErrCreateManyPermission      = oops.New("Lỗi khi tạo nhiều quyền")
 )

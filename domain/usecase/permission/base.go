@@ -11,6 +11,7 @@ import (
 
 type PermissionUsecaseI interface {
 	Create(ctx context.Context, permission *entity.Permission) error
+	CreateMany(ctx context.Context, permissions []*entity.Permission) error
 	GetByID(ctx context.Context, id string) (*entity.Permission, error)
 	List(ctx context.Context, pagination common.Pagination, filter entity.PermissionFilter) (common.PaginationResult[*entity.Permission], error)
 	Update(ctx context.Context, permission *entity.Permission) error
@@ -21,6 +22,7 @@ type PermissionUsecaseI interface {
 
 type PermissionUsecaseImpl struct {
 	createPermissionUsecase          CreatePermissionUsecase
+	createManyPermissionUsecase      CreateManyPermissionUsecase
 	getPermissionUsecase             GetPermissionUsecase
 	listPermissionsUsecase           ListPermissionsUsecase
 	updatePermissionUsecase          UpdatePermissionUsecase
@@ -32,6 +34,7 @@ type PermissionUsecaseImpl struct {
 func NewPermissionUsecase(permissionRepository repository.PermissionRepository, helper utils.Helper) PermissionUsecaseI {
 	return &PermissionUsecaseImpl{
 		createPermissionUsecase:          NewCreatePermissionUsecase(permissionRepository),
+		createManyPermissionUsecase:      NewCreateManyPermissionUsecase(permissionRepository),
 		getPermissionUsecase:             NewGetPermissionUsecase(permissionRepository),
 		listPermissionsUsecase:           NewListPermissionsUsecase(permissionRepository, helper),
 		updatePermissionUsecase:          NewUpdatePermissionUsecase(permissionRepository),
@@ -43,6 +46,10 @@ func NewPermissionUsecase(permissionRepository repository.PermissionRepository, 
 
 func (u *PermissionUsecaseImpl) Create(ctx context.Context, permission *entity.Permission) error {
 	return u.createPermissionUsecase.Execute(ctx, permission)
+}
+
+func (u *PermissionUsecaseImpl) CreateMany(ctx context.Context, permissions []*entity.Permission) error {
+	return u.createManyPermissionUsecase.Execute(ctx, permissions)
 }
 
 func (u *PermissionUsecaseImpl) GetByID(ctx context.Context, id string) (*entity.Permission, error) {

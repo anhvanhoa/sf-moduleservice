@@ -4,6 +4,7 @@ import (
 	"strings"
 
 	"github.com/anhvanhoa/service-core/bootstrap/config"
+	"github.com/anhvanhoa/service-core/domain/grpc_client"
 )
 
 type dbCache struct {
@@ -17,14 +18,16 @@ type dbCache struct {
 }
 
 type Env struct {
-	NodeEnv       string   `mapstructure:"node_env"`
-	UrlDb         string   `mapstructure:"url_db"`
-	NameService   string   `mapstructure:"name_service"`
-	PortGprc      int      `mapstructure:"port_grpc"`
-	HostGprc      string   `mapstructure:"host_grpc"`
-	IntervalCheck string   `mapstructure:"interval_check"`
-	TimeoutCheck  string   `mapstructure:"timeout_check"`
-	DbCache       *dbCache `mapstructure:"db_cache"`
+	NodeEnv           string                    `mapstructure:"node_env"`
+	UrlDb             string                    `mapstructure:"url_db"`
+	NameService       string                    `mapstructure:"name_service"`
+	PortGprc          int                       `mapstructure:"port_grpc"`
+	HostGprc          string                    `mapstructure:"host_grpc"`
+	IntervalCheck     string                    `mapstructure:"interval_check"`
+	TimeoutCheck      string                    `mapstructure:"timeout_check"`
+	DbCache           *dbCache                  `mapstructure:"db_cache"`
+	GrpcClients       []*grpc_client.ConfigGrpc `mapstructure:"grpc_clients"`
+	AddressPermission string                    `mapstructure:"address_permission"`
 }
 
 func NewEnv(env any) {

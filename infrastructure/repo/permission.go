@@ -27,6 +27,11 @@ func (r *permissionRepository) Create(ctx context.Context, permission *entity.Pe
 	return err
 }
 
+func (r *permissionRepository) CreateMany(ctx context.Context, permissions []*entity.Permission) error {
+	_, err := r.db.Model(permissions).Context(ctx).Insert()
+	return err
+}
+
 func (r *permissionRepository) GetByID(ctx context.Context, id string) (*entity.Permission, error) {
 	permission := &entity.Permission{}
 	err := r.db.Model(permission).Context(ctx).Where("id = ?", id).Select()

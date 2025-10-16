@@ -3,8 +3,8 @@ module module-service
 go 1.24.6
 
 require (
-	github.com/anhvanhoa/service-core v0.0.0-20251015075305-db4642d848ba
-	github.com/anhvanhoa/sf-proto v0.0.0-20251014151345-90d4bec00fcd
+	github.com/anhvanhoa/service-core v0.0.0-20251015184851-32e08c1713f9
+	github.com/anhvanhoa/sf-proto v0.0.0-20251016010653-82dbedbea7bd
 	github.com/go-pg/pg/v10 v10.15.0
 	go.uber.org/zap v1.27.0
 	google.golang.org/grpc v1.76.0
@@ -47,12 +47,15 @@ require (
 )
 
 require (
+	github.com/cespare/xxhash/v2 v2.3.0 // indirect
+	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/fsnotify/fsnotify v1.9.0 // indirect
 	github.com/go-pg/zerochecker v0.2.0 // indirect
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.27.3 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/pelletier/go-toml/v2 v2.2.4 // indirect
+	github.com/redis/go-redis/v9 v9.14.0 // indirect
 	github.com/sagikazarmark/locafero v0.10.0 // indirect
 	github.com/sourcegraph/conc v0.3.1-0.20240121214520-5f936abd7ae8 // indirect
 	github.com/spf13/afero v1.14.0 // indirect

@@ -19,7 +19,6 @@ func (s *resourcePermissionService) ListResourcePermissions(ctx context.Context,
 	if req.Filter != nil {
 		filter.UserID = req.Filter.UserId
 		filter.ResourceType = req.Filter.ResourceType
-		filter.ResourceID = req.Filter.ResourceId
 		filter.Action = req.Filter.Action
 	}
 	result, err := s.resourcePermissionUsecase.List(ctx, pagination, filter)

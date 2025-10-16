@@ -9,7 +9,7 @@ type ResourcePermission struct {
 	ID           string
 	UserID       string
 	ResourceType string
-	ResourceID   string
+	ResourceData map[string]string
 	Action       string
 	CreatedAt    time.Time
 	UpdatedAt    time.Time
@@ -22,6 +22,5 @@ func (r *ResourcePermission) TableName() any {
 type ResourcePermissionFilter struct {
 	UserID       string
 	ResourceType string
-	ResourceID   string
 	Action       string
 }

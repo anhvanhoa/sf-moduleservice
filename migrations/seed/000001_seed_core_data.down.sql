@@ -1,4 +1,17 @@
--- Remove mappings first due to FK constraints
+-- Remove resource permissions first due to FK constraints
+DELETE FROM resource_permissions
+WHERE id IN (
+    '30000000-0000-0000-0000-000000000001',
+    '30000000-0000-0000-0000-000000000002',
+    '30000000-0000-0000-0000-000000000003'
+);
+
+-- Remove user roles
+DELETE FROM user_roles
+WHERE user_id = '20000000-0000-0000-0000-000000000001'
+  AND role_id = '00000000-0000-0000-0000-000000000001';
+
+-- Remove role permissions mappings
 DELETE FROM role_permissions
 WHERE role_id IN ('00000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000002')
   AND permission_id IN (

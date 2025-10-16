@@ -10,13 +10,16 @@ import (
 	proto_role_permission "github.com/anhvanhoa/sf-proto/gen/role_permission/v1"
 	proto_user_role "github.com/anhvanhoa/sf-proto/gen/user_role/v1"
 
+	"github.com/anhvanhoa/service-core/domain/cache"
 	"github.com/anhvanhoa/service-core/domain/log"
+	"github.com/anhvanhoa/service-core/domain/user_context"
 	"google.golang.org/grpc"
 )
 
 func NewGRPCServer(
 	env *bootstrap.Env,
 	log *log.LogGRPCImpl,
+	cacher cache.CacheI,
 	permissionServer proto_permission.PermissionServiceServer,
 	roleServer proto_role.RoleServiceServer,
 	rolePermissionServer proto_role_permission.RolePermissionServiceServer,
@@ -28,6 +31,7 @@ func NewGRPCServer(
 		NameService:  env.NameService,
 		IsProduction: env.IsProduction(),
 	}
+	middleware := grpc_service.NewMiddleware()
 	return grpc_service.NewGRPCServer(
 		config,
 		log,
@@ -38,5 +42,14 @@ func NewGRPCServer(
 			proto_resource_permission.RegisterResourcePermissionServiceServer(server, resourcePermissionServer)
 			proto_user_role.RegisterUserRoleServiceServer(server, userRoleServer)
 		},
+		middleware.AuthorizationInterceptor(func(id string) *user_context.UserContext {
+			userData, err := cacher.Get(id)
+			if err != nil || userData == nil {
+				return nil
+			}
+			uCtx := user_context.NewUserContext()
+			uCtx.FromBytes(userData)
+			return uCtx
+		}),
 	)
 }

@@ -46,9 +46,6 @@ func (r *resourcePermissionRepository) List(ctx context.Context, pagination comm
 	if filter.ResourceType != "" {
 		query = query.Where("resource_type = ?", filter.ResourceType)
 	}
-	if filter.ResourceID != "" {
-		query = query.Where("resource_id = ?", filter.ResourceID)
-	}
 	if filter.Action != "" {
 		query = query.Where("action = ?", filter.Action)
 	}

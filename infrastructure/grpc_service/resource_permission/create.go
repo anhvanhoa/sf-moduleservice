@@ -20,7 +20,7 @@ func (s *resourcePermissionService) convertRequestCreateToEntity(req *proto_reso
 	return &entity.ResourcePermission{
 		UserID:       req.UserId,
 		ResourceType: req.ResourceType,
-		ResourceID:   req.ResourceId,
+		ResourceData: req.ResourceData,
 		Action:       req.Action,
 	}
 }

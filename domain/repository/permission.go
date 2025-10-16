@@ -9,6 +9,7 @@ import (
 
 type PermissionRepository interface {
 	Create(ctx context.Context, permission *entity.Permission) error
+	CreateMany(ctx context.Context, permissions []*entity.Permission) error
 	GetByID(ctx context.Context, id string) (*entity.Permission, error)
 	List(ctx context.Context, pagination common.Pagination, filter entity.PermissionFilter) ([]*entity.Permission, int64, error)
 	Update(ctx context.Context, permission *entity.Permission) error

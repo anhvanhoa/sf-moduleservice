@@ -27,7 +27,7 @@ func (s *resourcePermissionService) convertEntityToProtoResourcePermission(rp *e
 		Id:           rp.ID,
 		UserId:       rp.UserID,
 		ResourceType: rp.ResourceType,
-		ResourceId:   rp.ResourceID,
+		ResourceData: rp.ResourceData,
 		Action:       rp.Action,
 	}
 }

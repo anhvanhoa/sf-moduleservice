@@ -5,7 +5,8 @@ CREATE TABLE permissions (
     action VARCHAR(255) NOT NULL,
     description TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    unique(resource, action)
 );
 
 -- Create trigger for permissions updated_at

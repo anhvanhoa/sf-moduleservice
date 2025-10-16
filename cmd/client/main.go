@@ -3,12 +3,15 @@ package main
 import (
 	"bufio"
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
 	"os"
 	"strings"
 	"time"
 
+	"github.com/anhvanhoa/service-core/domain/cache"
+	"github.com/anhvanhoa/service-core/domain/user_context"
 	proto_permission "github.com/anhvanhoa/sf-proto/gen/permission/v1"
 	proto_resource_permission "github.com/anhvanhoa/sf-proto/gen/resource_permission/v1"
 	proto_role "github.com/anhvanhoa/sf-proto/gen/role/v1"
@@ -17,6 +20,7 @@ import (
 	"github.com/spf13/viper"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/metadata"
 )
 
 var serverAddress string
@@ -28,6 +32,7 @@ func init() {
 }
 
 type RoleServiceClient struct {
+	ctx                      context.Context
 	roleClient               proto_role.RoleServiceClient
 	permissionClient         proto_permission.PermissionServiceClient
 	rolePermissionClient     proto_role_permission.RolePermissionServiceClient
@@ -42,6 +47,10 @@ func NewRoleServiceClient(address string) (*RoleServiceClient, error) {
 		return nil, fmt.Errorf("failed to connect to gRPC server: %v", err)
 	}
 
+	ctx := context.Background()
+	md := metadata.Pairs("user_id", "1")
+	ctx = metadata.NewOutgoingContext(ctx, md)
+
 	return &RoleServiceClient{
 		roleClient:               proto_role.NewRoleServiceClient(conn),
 		permissionClient:         proto_permission.NewPermissionServiceClient(conn),
@@ -49,6 +58,7 @@ func NewRoleServiceClient(address string) (*RoleServiceClient, error) {
 		resourcePermissionClient: proto_resource_permission.NewResourcePermissionServiceClient(conn),
 		userRoleClient:           proto_user_role.NewUserRoleServiceClient(conn),
 		conn:                     conn,
+		ctx:                      ctx,
 	}, nil
 }
 
@@ -82,7 +92,7 @@ func (c *RoleServiceClient) TestCreateRole() {
 	variant, _ := reader.ReadString('\n')
 	variant = cleanInput(variant)
 
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(c.ctx, 10*time.Second)
 	defer cancel()
 
 	resp, err := c.roleClient.CreateRole(ctx, &proto_role.CreateRoleRequest{
@@ -109,7 +119,7 @@ func (c *RoleServiceClient) TestGetRoleById() {
 	id, _ := reader.ReadString('\n')
 	id = cleanInput(id)
 
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(c.ctx, 10*time.Second)
 	defer cancel()
 
 	resp, err := c.roleClient.GetRoleById(ctx, &proto_role.GetRoleByIdRequest{
@@ -131,7 +141,7 @@ func (c *RoleServiceClient) TestGetRoleById() {
 func (c *RoleServiceClient) TestGetAllRoles() {
 	fmt.Println("\n=== Test Get All Roles ===")
 
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(c.ctx, 10*time.Second)
 	defer cancel()
 
 	resp, err := c.roleClient.GetAllRoles(ctx, &proto_role.GetAllRolesRequest{})
@@ -168,7 +178,7 @@ func (c *RoleServiceClient) TestUpdateRole() {
 	variant, _ := reader.ReadString('\n')
 	variant = cleanInput(variant)
 
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(c.ctx, 10*time.Second)
 	defer cancel()
 
 	resp, err := c.roleClient.UpdateRole(ctx, &proto_role.UpdateRoleRequest{
@@ -198,7 +208,7 @@ func (c *RoleServiceClient) TestDeleteRole() {
 	id, _ := reader.ReadString('\n')
 	id = cleanInput(id)
 
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(c.ctx, 10*time.Second)
 	defer cancel()
 
 	resp, err := c.roleClient.DeleteRole(ctx, &proto_role.DeleteRoleRequest{
@@ -232,7 +242,7 @@ func (c *RoleServiceClient) TestCreatePermission() {
 	description, _ := reader.ReadString('\n')
 	description = cleanInput(description)
 
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(c.ctx, 10*time.Second)
 	defer cancel()
 
 	resp, err := c.permissionClient.CreatePermission(ctx, &proto_permission.CreatePermissionRequest{
@@ -261,7 +271,7 @@ func (c *RoleServiceClient) TestGetPermission() {
 	id, _ := reader.ReadString('\n')
 	id = cleanInput(id)
 
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(c.ctx, 10*time.Second)
 	defer cancel()
 
 	resp, err := c.permissionClient.GetPermission(ctx, &proto_permission.GetPermissionRequest{
@@ -282,7 +292,7 @@ func (c *RoleServiceClient) TestGetPermission() {
 func (c *RoleServiceClient) TestListPermissions() {
 	fmt.Println("\n=== Test List Permissions ===")
 
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(c.ctx, 10*time.Second)
 	defer cancel()
 
 	resp, err := c.permissionClient.ListPermissions(ctx, &proto_permission.ListPermissionsRequest{})
@@ -320,7 +330,7 @@ func (c *RoleServiceClient) TestUpdatePermission() {
 	description, _ := reader.ReadString('\n')
 	description = cleanInput(description)
 
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(c.ctx, 10*time.Second)
 	defer cancel()
 
 	resp, err := c.permissionClient.UpdatePermission(ctx, &proto_permission.UpdatePermissionRequest{
@@ -350,7 +360,7 @@ func (c *RoleServiceClient) TestDeletePermission() {
 	id, _ := reader.ReadString('\n')
 	id = cleanInput(id)
 
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(c.ctx, 10*time.Second)
 	defer cancel()
 
 	_, err := c.permissionClient.DeletePermission(ctx, &proto_permission.DeletePermissionRequest{
@@ -380,7 +390,7 @@ func (c *RoleServiceClient) TestCreateRolePermission() {
 	permissionId, _ := reader.ReadString('\n')
 	permissionId = cleanInput(permissionId)
 
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(c.ctx, 10*time.Second)
 	defer cancel()
 
 	resp, err := c.rolePermissionClient.CreateRolePermission(ctx, &proto_role_permission.CreateRolePermissionRequest{
@@ -410,7 +420,7 @@ func (c *RoleServiceClient) TestListRolePermissions() {
 	permissionId, _ := reader.ReadString('\n')
 	permissionId = cleanInput(permissionId)
 
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(c.ctx, 10*time.Second)
 	defer cancel()
 
 	req := &proto_role_permission.ListRolePermissionsRequest{}
@@ -453,7 +463,7 @@ func (c *RoleServiceClient) TestDeleteRolePermission() {
 	permissionId, _ := reader.ReadString('\n')
 	permissionId = cleanInput(permissionId)
 
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(c.ctx, 10*time.Second)
 	defer cancel()
 
 	_, err := c.rolePermissionClient.DeleteRolePermission(ctx, &proto_role_permission.DeleteRolePermissionRequest{
@@ -484,21 +494,27 @@ func (c *RoleServiceClient) TestCreateResourcePermission() {
 	resourceType, _ := reader.ReadString('\n')
 	resourceType = cleanInput(resourceType)
 
-	fmt.Print("Enter resource ID: ")
-	resourceId, _ := reader.ReadString('\n')
-	resourceId = cleanInput(resourceId)
+	fmt.Print("Enter resource data json: ")
+	resourceData, _ := reader.ReadString('\n')
+	resourceData = cleanInput(resourceData)
+	var resourceDataMap map[string]string
+	err := json.Unmarshal([]byte(resourceData), &resourceDataMap)
+	if err != nil {
+		fmt.Printf("Error unmarshalling resource data: %v\n", err)
+		return
+	}
 
 	fmt.Print("Enter action: ")
 	action, _ := reader.ReadString('\n')
 	action = cleanInput(action)
 
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(c.ctx, 10*time.Second)
 	defer cancel()
 
 	resp, err := c.resourcePermissionClient.CreateResourcePermission(ctx, &proto_resource_permission.CreateResourcePermissionRequest{
 		UserId:       userId,
 		ResourceType: resourceType,
-		ResourceId:   resourceId,
+		ResourceData: resourceDataMap,
 		Action:       action,
 	})
 	if err != nil {
@@ -510,7 +526,7 @@ func (c *RoleServiceClient) TestCreateResourcePermission() {
 	fmt.Printf("ID: %s\n", resp.ResourcePermission.Id)
 	fmt.Printf("User ID: %s\n", resp.ResourcePermission.UserId)
 	fmt.Printf("Resource Type: %s\n", resp.ResourcePermission.ResourceType)
-	fmt.Printf("Resource ID: %s\n", resp.ResourcePermission.ResourceId)
+	fmt.Printf("Resource Data: %s\n", resp.ResourcePermission.ResourceData)
 	fmt.Printf("Action: %s\n", resp.ResourcePermission.Action)
 }
 
@@ -523,7 +539,7 @@ func (c *RoleServiceClient) TestGetResourcePermission() {
 	id, _ := reader.ReadString('\n')
 	id = cleanInput(id)
 
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(c.ctx, 10*time.Second)
 	defer cancel()
 
 	resp, err := c.resourcePermissionClient.GetResourcePermission(ctx, &proto_resource_permission.GetResourcePermissionRequest{
@@ -538,7 +554,7 @@ func (c *RoleServiceClient) TestGetResourcePermission() {
 	fmt.Printf("ID: %s\n", resp.ResourcePermission.Id)
 	fmt.Printf("User ID: %s\n", resp.ResourcePermission.UserId)
 	fmt.Printf("Resource Type: %s\n", resp.ResourcePermission.ResourceType)
-	fmt.Printf("Resource ID: %s\n", resp.ResourcePermission.ResourceId)
+	fmt.Printf("Resource Data: %s\n", resp.ResourcePermission.ResourceData)
 	fmt.Printf("Action: %s\n", resp.ResourcePermission.Action)
 }
 
@@ -555,28 +571,21 @@ func (c *RoleServiceClient) TestListResourcePermissions() {
 	resourceType, _ := reader.ReadString('\n')
 	resourceType = cleanInput(resourceType)
 
-	fmt.Print("Enter resource ID (optional, press Enter to skip): ")
-	resourceId, _ := reader.ReadString('\n')
-	resourceId = cleanInput(resourceId)
-
 	fmt.Print("Enter action (optional, press Enter to skip): ")
 	action, _ := reader.ReadString('\n')
 	action = cleanInput(action)
 
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(c.ctx, 10*time.Second)
 	defer cancel()
 
 	req := &proto_resource_permission.ListResourcePermissionsRequest{}
-	if userId != "" || resourceType != "" || resourceId != "" || action != "" {
+	if userId != "" || resourceType != "" || action != "" {
 		req.Filter = &proto_resource_permission.ResourcePermissionFilter{}
 		if userId != "" {
 			req.Filter.UserId = userId
 		}
 		if resourceType != "" {
 			req.Filter.ResourceType = resourceType
-		}
-		if resourceId != "" {
-			req.Filter.ResourceId = resourceId
 		}
 		if action != "" {
 			req.Filter.Action = action
@@ -592,7 +601,7 @@ func (c *RoleServiceClient) TestListResourcePermissions() {
 	fmt.Printf("List Resource Permissions result:\n")
 	fmt.Printf("Total Resource Permissions: %d\n", len(resp.ResourcePermissions))
 	for i, rp := range resp.ResourcePermissions {
-		fmt.Printf("  [%d] ID: %s, User ID: %s, Resource Type: %s, Resource ID: %s, Action: %s\n", i+1, rp.Id, rp.UserId, rp.ResourceType, rp.ResourceId, rp.Action)
+		fmt.Printf("  [%d] ID: %s, User ID: %s, Resource Type: %s, Resource Data: %s, Action: %s\n", i+1, rp.Id, rp.UserId, rp.ResourceType, rp.ResourceData, rp.Action)
 	}
 }
 
@@ -613,22 +622,28 @@ func (c *RoleServiceClient) TestUpdateResourcePermission() {
 	resourceType, _ := reader.ReadString('\n')
 	resourceType = cleanInput(resourceType)
 
-	fmt.Print("Enter new resource ID: ")
-	resourceId, _ := reader.ReadString('\n')
-	resourceId = cleanInput(resourceId)
+	fmt.Print("Enter new resource data json: ")
+	resourceData, _ := reader.ReadString('\n')
+	resourceData = cleanInput(resourceData)
+	var resourceDataMap map[string]string
+	err := json.Unmarshal([]byte(resourceData), &resourceDataMap)
+	if err != nil {
+		fmt.Printf("Error unmarshalling resource data: %v\n", err)
+		return
+	}
 
 	fmt.Print("Enter new action: ")
 	action, _ := reader.ReadString('\n')
 	action = cleanInput(action)
 
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(c.ctx, 10*time.Second)
 	defer cancel()
 
 	resp, err := c.resourcePermissionClient.UpdateResourcePermission(ctx, &proto_resource_permission.UpdateResourcePermissionRequest{
 		Id:           id,
 		UserId:       userId,
 		ResourceType: resourceType,
-		ResourceId:   resourceId,
+		ResourceData: resourceDataMap,
 		Action:       action,
 	})
 	if err != nil {
@@ -640,7 +655,7 @@ func (c *RoleServiceClient) TestUpdateResourcePermission() {
 	fmt.Printf("ID: %s\n", resp.ResourcePermission.Id)
 	fmt.Printf("User ID: %s\n", resp.ResourcePermission.UserId)
 	fmt.Printf("Resource Type: %s\n", resp.ResourcePermission.ResourceType)
-	fmt.Printf("Resource ID: %s\n", resp.ResourcePermission.ResourceId)
+	fmt.Printf("Resource Data: %s\n", resp.ResourcePermission.ResourceData)
 	fmt.Printf("Action: %s\n", resp.ResourcePermission.Action)
 }
 
@@ -653,7 +668,7 @@ func (c *RoleServiceClient) TestDeleteResourcePermission() {
 	id, _ := reader.ReadString('\n')
 	id = cleanInput(id)
 
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(c.ctx, 10*time.Second)
 	defer cancel()
 
 	_, err := c.resourcePermissionClient.DeleteResourcePermission(ctx, &proto_resource_permission.DeleteResourcePermissionRequest{
@@ -683,7 +698,7 @@ func (c *RoleServiceClient) TestCreateUserRole() {
 	roleId, _ := reader.ReadString('\n')
 	roleId = cleanInput(roleId)
 
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(c.ctx, 10*time.Second)
 	defer cancel()
 
 	resp, err := c.userRoleClient.CreateUserRole(ctx, &proto_user_role.CreateUserRoleRequest{
@@ -713,7 +728,7 @@ func (c *RoleServiceClient) TestListUserRoles() {
 	roleId, _ := reader.ReadString('\n')
 	roleId = cleanInput(roleId)
 
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(c.ctx, 10*time.Second)
 	defer cancel()
 
 	req := &proto_user_role.ListUserRolesRequest{}
@@ -753,7 +768,7 @@ func (c *RoleServiceClient) TestDeleteUserRole() {
 	roleId, _ := reader.ReadString('\n')
 	roleId = cleanInput(roleId)
 
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(c.ctx, 10*time.Second)
 	defer cancel()
 
 	_, err := c.userRoleClient.DeleteUserRole(ctx, &proto_user_role.DeleteUserRoleRequest{
@@ -838,6 +853,30 @@ func main() {
 	if len(os.Args) > 1 {
 		address = os.Args[1]
 	}
+
+	cacher := cache.NewCache(cache.ConfigCache{
+		Addr:        viper.GetString("cache_addr"),
+		DB:          viper.GetInt("cache_db"),
+		Password:    viper.GetString("cache_password"),
+		MaxIdle:     viper.GetInt("cache_max_idle"),
+		MaxActive:   viper.GetInt("cache_max_active"),
+		IdleTimeout: viper.GetInt("cache_idle_timeout"),
+	})
+
+	uCtx := user_context.NewUserContext()
+	uCtx.UserID = "1"
+	uCtx.Roles = []string{"admin", "user"}
+	uCtx.Permissions = []user_context.Permission{
+		{
+			Resource: "admin",
+			Action:   "read",
+		},
+	}
+	userData, err := uCtx.ToBytes()
+	if err != nil {
+		log.Fatalf("Failed to convert user context to bytes: %v", err)
+	}
+	cacher.Set("1", userData, 0)
 
 	fmt.Printf("Connecting to gRPC server at %s...\n", address)
 	client, err := NewRoleServiceClient(address)
