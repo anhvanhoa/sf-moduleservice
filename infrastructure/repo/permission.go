@@ -28,7 +28,7 @@ func (r *permissionRepository) Create(ctx context.Context, permission *entity.Pe
 }
 
 func (r *permissionRepository) CreateMany(ctx context.Context, permissions []*entity.Permission) error {
-	_, err := r.db.Model(permissions).Context(ctx).Insert()
+	_, err := r.db.Model(&permissions).Context(ctx).Insert()
 	return err
 }
 
@@ -41,15 +41,16 @@ func (r *permissionRepository) GetByID(ctx context.Context, id string) (*entity.
 	return permission, nil
 }
 
-func (r *permissionRepository) List(ctx context.Context, pagination common.Pagination, filter entity.PermissionFilter) ([]*entity.Permission, int64, error) {
+func (r *permissionRepository) List(ctx context.Context, pagination *common.Pagination, filter *entity.PermissionFilter) ([]*entity.Permission, int64, error) {
 	var permissions []*entity.Permission
 	query := r.db.Model(&permissions).Context(ctx)
-
-	if filter.Resource != "" {
-		query = query.Where("resource = ?", filter.Resource)
-	}
-	if filter.Action != "" {
-		query = query.Where("action = ?", filter.Action)
+	if filter != nil {
+		if filter.Resource != "" {
+			query = query.Where("resource = ?", filter.Resource)
+		}
+		if filter.Action != "" {
+			query = query.Where("action = ?", filter.Action)
+		}
 	}
 
 	total, err := query.Count()
@@ -57,14 +58,17 @@ func (r *permissionRepository) List(ctx context.Context, pagination common.Pagin
 		return nil, 0, err
 	}
 
-	if pagination.PageSize >= 0 {
-		pagination.PageSize = 10
+	if pagination != nil {
+		if pagination.PageSize >= 0 {
+			pagination.PageSize = 10
+		}
+		if pagination.Page >= 0 {
+			pagination.Page = 1
+		}
+		offset := r.helper.CalculateOffset(pagination.Page, pagination.PageSize)
+		query = query.Offset(int(offset)).Limit(int(pagination.PageSize))
 	}
-	if pagination.Page >= 0 {
-		pagination.Page = 1
-	}
-	offset := r.helper.CalculateOffset(pagination.Page, pagination.PageSize)
-	query = query.Offset(int(offset)).Limit(int(pagination.PageSize))
+
 	err = query.Select()
 	if err != nil {
 		return nil, 0, err
@@ -79,6 +83,14 @@ func (r *permissionRepository) Update(ctx context.Context, permission *entity.Pe
 
 func (r *permissionRepository) Delete(ctx context.Context, id string) error {
 	_, err := r.db.Model(&entity.Permission{}).Context(ctx).Where("id = ?", id).Delete()
+	return err
+}
+
+func (r *permissionRepository) DeleteMany(ctx context.Context, permissions []*entity.Permission) error {
+	if len(permissions) == 0 {
+		return nil
+	}
+	_, err := r.db.Model(&permissions).Context(ctx).Delete()
 	return err
 }
 

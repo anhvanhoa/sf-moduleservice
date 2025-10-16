@@ -10,7 +10,7 @@ import (
 )
 
 type ListPermissionsUsecase interface {
-	Execute(ctx context.Context, pagination common.Pagination, filter entity.PermissionFilter) (common.PaginationResult[*entity.Permission], error)
+	Execute(ctx context.Context, pagination *common.Pagination, filter *entity.PermissionFilter) (common.PaginationResult[*entity.Permission], error)
 }
 
 type ListPermissionsUsecaseImpl struct {
@@ -26,7 +26,7 @@ func NewListPermissionsUsecase(permissionRepository repository.PermissionReposit
 }
 
 func (u *ListPermissionsUsecaseImpl) Execute(
-	ctx context.Context, pagination common.Pagination, filter entity.PermissionFilter,
+	ctx context.Context, pagination *common.Pagination, filter *entity.PermissionFilter,
 ) (common.PaginationResult[*entity.Permission], error) {
 	permissions, total, err := u.permissionRepository.List(ctx, pagination, filter)
 	if err != nil {

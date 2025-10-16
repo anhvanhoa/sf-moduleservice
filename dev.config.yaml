@@ -5,3 +5,11 @@ port_grpc: 50051
 host_grpc: "localhost"
 interval_check: "10s"
 timeout_check: "5s"
+db_cache:
+  addr: "localhost:6379"
+  db: 1
+  password: ""
+  max_idle: 10
+  max_active: 100
+  idle_timeout: 240
+  network: "tcp"

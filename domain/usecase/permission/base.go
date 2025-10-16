@@ -11,7 +11,7 @@ import (
 
 type PermissionUsecaseI interface {
 	Create(ctx context.Context, permission *entity.Permission) error
-	CreateMany(ctx context.Context, permissions []*entity.Permission) error
+	Register(ctx context.Context, permissions []*entity.Permission) error
 	GetByID(ctx context.Context, id string) (*entity.Permission, error)
 	List(ctx context.Context, pagination common.Pagination, filter entity.PermissionFilter) (common.PaginationResult[*entity.Permission], error)
 	Update(ctx context.Context, permission *entity.Permission) error
@@ -22,7 +22,7 @@ type PermissionUsecaseI interface {
 
 type PermissionUsecaseImpl struct {
 	createPermissionUsecase          CreatePermissionUsecase
-	createManyPermissionUsecase      CreateManyPermissionUsecase
+	registerPermissionsUsecase       RegisterPermissionsUsecase
 	getPermissionUsecase             GetPermissionUsecase
 	listPermissionsUsecase           ListPermissionsUsecase
 	updatePermissionUsecase          UpdatePermissionUsecase
@@ -34,7 +34,7 @@ type PermissionUsecaseImpl struct {
 func NewPermissionUsecase(permissionRepository repository.PermissionRepository, helper utils.Helper) PermissionUsecaseI {
 	return &PermissionUsecaseImpl{
 		createPermissionUsecase:          NewCreatePermissionUsecase(permissionRepository),
-		createManyPermissionUsecase:      NewCreateManyPermissionUsecase(permissionRepository),
+		registerPermissionsUsecase:       NewRegisterPermissionsUsecase(permissionRepository),
 		getPermissionUsecase:             NewGetPermissionUsecase(permissionRepository),
 		listPermissionsUsecase:           NewListPermissionsUsecase(permissionRepository, helper),
 		updatePermissionUsecase:          NewUpdatePermissionUsecase(permissionRepository),
@@ -48,8 +48,8 @@ func (u *PermissionUsecaseImpl) Create(ctx context.Context, permission *entity.P
 	return u.createPermissionUsecase.Execute(ctx, permission)
 }
 
-func (u *PermissionUsecaseImpl) CreateMany(ctx context.Context, permissions []*entity.Permission) error {
-	return u.createManyPermissionUsecase.Execute(ctx, permissions)
+func (u *PermissionUsecaseImpl) Register(ctx context.Context, permissions []*entity.Permission) error {
+	return u.registerPermissionsUsecase.Execute(ctx, permissions)
 }
 
 func (u *PermissionUsecaseImpl) GetByID(ctx context.Context, id string) (*entity.Permission, error) {
@@ -57,7 +57,7 @@ func (u *PermissionUsecaseImpl) GetByID(ctx context.Context, id string) (*entity
 }
 
 func (u *PermissionUsecaseImpl) List(ctx context.Context, pagination common.Pagination, filter entity.PermissionFilter) (common.PaginationResult[*entity.Permission], error) {
-	return u.listPermissionsUsecase.Execute(ctx, pagination, filter)
+	return u.listPermissionsUsecase.Execute(ctx, &pagination, &filter)
 }
 
 func (u *PermissionUsecaseImpl) Update(ctx context.Context, permission *entity.Permission) error {

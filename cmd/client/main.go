@@ -868,8 +868,8 @@ func main() {
 	uCtx.Roles = []string{"admin", "user"}
 	uCtx.Permissions = []user_context.Permission{
 		{
-			Resource: "admin",
-			Action:   "read",
+			Resource: "role_permission.v1.RolePermissionService",
+			Action:   "DeleteRolePermission",
 		},
 	}
 	userData, err := uCtx.ToBytes()

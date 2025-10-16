@@ -7,20 +7,20 @@ import (
 	proto_permission "github.com/anhvanhoa/sf-proto/gen/permission/v1"
 )
 
-func (s *permissionService) CreateManyPermission(ctx context.Context, req *proto_permission.CreatePermissionsRequest) (*proto_permission.CreatePermissionsResponse, error) {
+func (s *permissionService) RegisterPermission(ctx context.Context, req *proto_permission.RegisterPermissionRequest) (*proto_permission.RegisterPermissionsResponse, error) {
 	permissions := make([]*entity.Permission, len(req.Permissions))
 	for i, permission := range req.Permissions {
 		permissions[i] = &entity.Permission{
-			Resource:    permission.Resource,
-			Action:      permission.Action,
-			Description: permission.Description,
+			Resource:    permission.GetResource(),
+			Action:      permission.GetAction(),
+			Description: permission.GetDescription(),
 		}
 	}
-	err := s.permissionUsecase.CreateMany(ctx, permissions)
+	err := s.permissionUsecase.Register(ctx, permissions)
 	if err != nil {
 		return nil, err
 	}
-	return &proto_permission.CreatePermissionsResponse{
+	return &proto_permission.RegisterPermissionsResponse{
 		Permissions: s.convertEntityToProtoPermissions(permissions),
 	}, nil
 }
