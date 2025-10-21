@@ -35,15 +35,14 @@ func StartGRPCServer() {
 	}
 	discovery.Register()
 
-	permissionServer := permission_service.NewPermissionServer(app.Repos, app.Helper)
+	permissionServer := permission_service.NewPermissionServer(app.Repos, app.Cacher, app.Helper)
 	roleServer := role_service.NewRoleServer(app.Repos)
 	rolePermissionServer := role_permission_service.NewRolePermissionServer(app.Repos, app.Helper)
 	resourcePermissionServer := resource_permission_service.NewResourcePermissionServer(app.Repos, app.Helper)
 	userRoleServer := user_role_service.NewUserRoleServer(app.Repos, app.Helper)
 	grpcSrv := grpcservice.NewGRPCServer(env, log, app.Cacher, permissionServer, roleServer, rolePermissionServer, resourcePermissionServer, userRoleServer)
 	ctx, cancel := context.WithCancel(context.Background())
-	resources := grpcSrv.GetResources()
-	permissions := permissionServer.ConvertResourcesToPermissions(resources)
+	permissions := app.Helper.ConvertResourcesToPermissions(grpcSrv.GetResources())
 	if _, err := permissionServer.RegisterPermission(ctx, permissions); err != nil {
 		log.Fatal("Failed to create permissions: " + err.Error())
 	}

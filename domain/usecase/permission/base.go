@@ -6,6 +6,7 @@ import (
 	"module-service/domain/repository"
 
 	"github.com/anhvanhoa/service-core/common"
+	"github.com/anhvanhoa/service-core/domain/cache"
 	"github.com/anhvanhoa/service-core/utils"
 )
 
@@ -31,10 +32,10 @@ type PermissionUsecaseImpl struct {
 	countByResourceUsecase           CountByResourceUsecase
 }
 
-func NewPermissionUsecase(permissionRepository repository.PermissionRepository, helper utils.Helper) PermissionUsecaseI {
+func NewPermissionUsecase(permissionRepository repository.PermissionRepository, cacher cache.CacheI, helper utils.Helper) PermissionUsecaseI {
 	return &PermissionUsecaseImpl{
 		createPermissionUsecase:          NewCreatePermissionUsecase(permissionRepository),
-		registerPermissionsUsecase:       NewRegisterPermissionsUsecase(permissionRepository),
+		registerPermissionsUsecase:       NewRegisterPermissionsUsecase(permissionRepository, cacher),
 		getPermissionUsecase:             NewGetPermissionUsecase(permissionRepository),
 		listPermissionsUsecase:           NewListPermissionsUsecase(permissionRepository, helper),
 		updatePermissionUsecase:          NewUpdatePermissionUsecase(permissionRepository),

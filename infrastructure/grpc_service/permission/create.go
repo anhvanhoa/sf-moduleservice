@@ -21,6 +21,7 @@ func (s *permissionService) convertRequestCreateToEntity(req *proto_permission.C
 		Resource:    req.Resource,
 		Action:      req.Action,
 		Description: req.Description,
+		IsPublic:    req.IsPublic,
 	}
 	return p
 }

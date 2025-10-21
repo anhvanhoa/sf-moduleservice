@@ -10,6 +10,7 @@ type Permission struct {
 	Resource    string
 	Action      string
 	Description string
+	IsPublic    bool
 	CreatedAt   time.Time
 	UpdatedAt   *time.Time
 }

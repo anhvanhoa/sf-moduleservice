@@ -41,6 +41,11 @@ func App() *Application {
 		IdleTimeout: env.DbCache.IdleTimeout,
 	})
 
+	err := cacher.Ping()
+	if err != nil {
+		log.Fatal("Failed to ping cache: " + err.Error())
+	}
+
 	helper := utils.NewHelper()
 	repos := repo.NewRepositories(db, helper)
 

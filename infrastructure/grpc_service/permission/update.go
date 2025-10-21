@@ -24,5 +24,6 @@ func (s *permissionService) convertUpdateRequestToEntity(req *proto_permission.U
 		Resource:    req.Resource,
 		Action:      req.Action,
 		Description: req.Description,
+		IsPublic:    req.IsPublic,
 	}
 }

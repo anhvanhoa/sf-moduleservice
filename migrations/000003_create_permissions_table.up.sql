@@ -3,6 +3,7 @@ CREATE TABLE permissions (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     resource VARCHAR(255) NOT NULL,
     action VARCHAR(255) NOT NULL,
+    is_public BOOLEAN DEFAULT FALSE,
     description TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

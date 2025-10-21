@@ -855,22 +855,35 @@ func main() {
 	}
 
 	cacher := cache.NewCache(cache.ConfigCache{
-		Addr:        viper.GetString("cache_addr"),
-		DB:          viper.GetInt("cache_db"),
-		Password:    viper.GetString("cache_password"),
-		MaxIdle:     viper.GetInt("cache_max_idle"),
-		MaxActive:   viper.GetInt("cache_max_active"),
-		IdleTimeout: viper.GetInt("cache_idle_timeout"),
+		Addr:        viper.GetString("db_cache.cache_addr"),
+		DB:          viper.GetInt("db_cache.db"),
+		Password:    viper.GetString("db_cache.password"),
+		MaxIdle:     viper.GetInt("db_cache.max_idle"),
+		MaxActive:   viper.GetInt("db_cache.max_active"),
+		IdleTimeout: viper.GetInt("db_cache.idle_timeout"),
 	})
 
 	uCtx := user_context.NewUserContext()
 	uCtx.UserID = "1"
 	uCtx.Roles = []string{"admin", "user"}
+	uCtx.Scopes = []user_context.Scope{
+		{
+			Resource: "role.v1.RoleService",
+			Action:   "GetRoleById",
+			ResourceData: map[string]string{
+				"Id": "8c6b80ca-7a1b-449a-bc00-a36d0c082797",
+			},
+		},
+	}
 	uCtx.Permissions = []user_context.Permission{
 		{
-			Resource: "role_permission.v1.RolePermissionService",
-			Action:   "DeleteRolePermission",
+			Resource: "role.v1.RoleService",
+			Action:   "GetAllRoles",
 		},
+		// {
+		// 	Resource: "role.v1.RoleService",
+		// 	Action:   "GetRoleById",
+		// },
 	}
 	userData, err := uCtx.ToBytes()
 	if err != nil {

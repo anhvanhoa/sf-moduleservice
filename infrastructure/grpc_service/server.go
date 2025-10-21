@@ -42,14 +42,22 @@ func NewGRPCServer(
 			proto_resource_permission.RegisterResourcePermissionServiceServer(server, resourcePermissionServer)
 			proto_user_role.RegisterUserRoleServiceServer(server, userRoleServer)
 		},
-		middleware.AuthorizationInterceptor(func(id string) *user_context.UserContext {
-			userData, err := cacher.Get(id)
-			if err != nil || userData == nil {
-				return nil
-			}
-			uCtx := user_context.NewUserContext()
-			uCtx.FromBytes(userData)
-			return uCtx
-		}),
+		middleware.AuthorizationInterceptor(
+			func(action string, resource string) bool {
+				hasPermission, err := cacher.Get(resource + "." + action)
+				if err != nil {
+					return false
+				}
+				return hasPermission != nil && string(hasPermission) == "true"
+			},
+			func(id string) *user_context.UserContext {
+				userData, err := cacher.Get(id)
+				if err != nil || userData == nil {
+					return nil
+				}
+				uCtx := user_context.NewUserContext()
+				uCtx.FromBytes(userData)
+				return uCtx
+			}),
 	)
 }
