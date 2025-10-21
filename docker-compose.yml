@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  # Permission Service
+  permission-service:
+    build:
+      context: .
+      dockerfile: DockerFile
+      args:
+        - GITHUB_TOKEN=${GITHUB_TOKEN}
+    container_name: permission_service_app
+    ports:
+      - "50051:50051"
+    networks:
+      - sf
+    environment:
+      - NODE_ENV=production
+    volumes:
+      - ./permission_service.config.yaml:/config/permission_service.config.yaml
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:50051/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+networks:
+  sf:
+    internal: true

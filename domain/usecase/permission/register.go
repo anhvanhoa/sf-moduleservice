@@ -2,6 +2,7 @@ package permission
 
 import (
 	"context"
+	"fmt"
 	"module-service/domain/entity"
 	"module-service/domain/repository"
 
@@ -27,12 +28,51 @@ func NewRegisterPermissionsUsecase(permissionRepository repository.PermissionRep
 	}
 }
 
+// Helper methods for optimization
+
+// getPermissionKey creates a unique key for permission lookup
+func (u *RegisterPermissionUsecaseImpl) getPermissionKey(resource, action string) string {
+	return fmt.Sprintf("%s.%s", resource, action)
+}
+
+// batchSetCache sets multiple permissions in cache with the same value
+func (u *RegisterPermissionUsecaseImpl) batchSetCache(permissions []*entity.Permission, value string) {
+	for _, permission := range permissions {
+		cacheKey := u.getPermissionKey(permission.Resource, permission.Action)
+		u.cacher.Set(cacheKey, []byte(value), 0)
+	}
+}
+
+// batchDeleteCache removes multiple permissions from cache
+func (u *RegisterPermissionUsecaseImpl) batchDeleteCache(permissions []*entity.Permission) {
+	for _, permission := range permissions {
+		cacheKey := u.getPermissionKey(permission.Resource, permission.Action)
+		u.cacher.Delete(cacheKey)
+	}
+}
+
+// batchUpdateCache updates cache for existing permissions with their IsPublic status
+func (u *RegisterPermissionUsecaseImpl) batchUpdateCache(permissions []*entity.Permission) {
+	for _, permission := range permissions {
+		cacheKey := u.getPermissionKey(permission.Resource, permission.Action)
+		isPublic := "false"
+		if permission.IsPublic {
+			isPublic = "true"
+		}
+		u.cacher.Set(cacheKey, []byte(isPublic), 0)
+	}
+}
+
 func (u *RegisterPermissionUsecaseImpl) Execute(ctx context.Context, permissions []*entity.Permission) error {
 	filter := &entity.PermissionFilter{
 		Resource: []string{},
 	}
+	resources := make(map[string]bool)
 	for _, permission := range permissions {
-		filter.Resource = append(filter.Resource, permission.Resource)
+		resources[permission.Resource] = true
+	}
+	for resource := range resources {
+		filter.Resource = append(filter.Resource, resource)
 	}
 	existingPermissions, _, err := u.permissionRepository.List(ctx, nil, filter)
 	if err != nil {
@@ -57,16 +97,18 @@ func (u *RegisterPermissionUsecaseImpl) Execute(ctx context.Context, permissions
 }
 
 func (u *RegisterPermissionUsecaseImpl) DiffPermissions(ctx context.Context, permissions, existingPermissions []*entity.Permission) error {
-	diffPermissions := make([]*entity.Permission, 0)
+	// Create a map for O(1) lookup of existing permissions
+	existingMap := make(map[string]*entity.Permission)
+	for _, existing := range existingPermissions {
+		key := u.getPermissionKey(existing.Resource, existing.Action)
+		existingMap[key] = existing
+	}
+
+	// Find permissions that don't exist
+	diffPermissions := make([]*entity.Permission, 0, len(permissions))
 	for _, permission := range permissions {
-		found := false
-		for _, existingPermission := range existingPermissions {
-			if existingPermission.Resource == permission.Resource && existingPermission.Action == permission.Action {
-				found = true
-				break
-			}
-		}
-		if !found {
+		key := u.getPermissionKey(permission.Resource, permission.Action)
+		if _, exists := existingMap[key]; !exists {
 			diffPermissions = append(diffPermissions, permission)
 		}
 	}
@@ -81,29 +123,29 @@ func (u *RegisterPermissionUsecaseImpl) DiffPermissions(ctx context.Context, per
 		return err
 	}
 
-	// Set new permissions to cache
-	for _, permission := range diffPermissions {
-		cacheKey := permission.Resource + "." + permission.Action
-		u.cacher.Set(cacheKey, []byte("false"), 0)
-	}
+	// Batch cache operations for new permissions
+	u.batchSetCache(diffPermissions, "false")
 
 	return nil
 }
 
 func (u *RegisterPermissionUsecaseImpl) RemovePermissions(ctx context.Context, permissions, existingPermissions []*entity.Permission) error {
-	removePermissions := make([]*entity.Permission, 0)
-	for _, existingPermission := range existingPermissions {
-		found := false
-		for _, permission := range permissions {
-			if existingPermission.Resource == permission.Resource && existingPermission.Action == permission.Action {
-				found = true
-				break
-			}
-		}
-		if !found {
-			removePermissions = append(removePermissions, existingPermission)
+	// Create a map for O(1) lookup of current permissions
+	currentMap := make(map[string]bool)
+	for _, permission := range permissions {
+		key := u.getPermissionKey(permission.Resource, permission.Action)
+		currentMap[key] = true
+	}
+
+	// Find permissions to remove
+	removePermissions := make([]*entity.Permission, 0, len(existingPermissions))
+	for _, existing := range existingPermissions {
+		key := u.getPermissionKey(existing.Resource, existing.Action)
+		if !currentMap[key] {
+			removePermissions = append(removePermissions, existing)
 		}
 	}
+
 	if len(removePermissions) == 0 {
 		return nil
 	}
@@ -114,30 +156,30 @@ func (u *RegisterPermissionUsecaseImpl) RemovePermissions(ctx context.Context, p
 		return err
 	}
 
-	// Remove permissions from cache
-	for _, permission := range removePermissions {
-		cacheKey := permission.Resource + "." + permission.Action
-		u.cacher.Delete(cacheKey)
-	}
+	// Batch remove permissions from cache
+	u.batchDeleteCache(removePermissions)
 
 	return nil
 }
 
 func (u *RegisterPermissionUsecaseImpl) UpdateExistingPermissionsCache(ctx context.Context, permissions, existingPermissions []*entity.Permission) error {
+	// Create a map for O(1) lookup of existing permissions
+	existingMap := make(map[string]*entity.Permission)
+	for _, existing := range existingPermissions {
+		key := u.getPermissionKey(existing.Resource, existing.Action)
+		existingMap[key] = existing
+	}
+
 	// Update cache for existing permissions that are still valid
+	permissionsToUpdate := make([]*entity.Permission, 0, len(permissions))
 	for _, permission := range permissions {
-		for _, existingPermission := range existingPermissions {
-			if existingPermission.Resource == permission.Resource && existingPermission.Action == permission.Action {
-				// This permission exists in DB and is still valid, update cache
-				cacheKey := permission.Resource + "." + permission.Action
-				isPublic := "false"
-				if existingPermission.IsPublic {
-					isPublic = "true"
-				}
-				u.cacher.Set(cacheKey, []byte(isPublic), 0)
-				break
-			}
+		key := u.getPermissionKey(permission.Resource, permission.Action)
+		if existing, found := existingMap[key]; found {
+			permissionsToUpdate = append(permissionsToUpdate, existing)
 		}
 	}
+
+	// Batch update cache
+	u.batchUpdateCache(permissionsToUpdate)
 	return nil
 }

@@ -1,4 +1,6 @@
 /logs
+/bin
 
 prod.config.yaml
+permission_service.config.yaml
 .idea

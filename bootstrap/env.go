@@ -30,7 +30,8 @@ type Env struct {
 func NewEnv(env any) {
 	sc := config.DefaultSettingsConfig()
 	if sc.IsProduction() {
-		sc.SetFile("prod.config")
+		sc.SetPath("/config")
+		sc.SetFile("permission_service.config")
 	} else {
 		sc.SetFile("dev.config")
 	}
