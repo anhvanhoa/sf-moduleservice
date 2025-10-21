@@ -28,7 +28,13 @@ func NewRegisterPermissionsUsecase(permissionRepository repository.PermissionRep
 }
 
 func (u *RegisterPermissionUsecaseImpl) Execute(ctx context.Context, permissions []*entity.Permission) error {
-	existingPermissions, _, err := u.permissionRepository.List(ctx, nil, nil)
+	filter := &entity.PermissionFilter{
+		Resource: []string{},
+	}
+	for _, permission := range permissions {
+		filter.Resource = append(filter.Resource, permission.Resource)
+	}
+	existingPermissions, _, err := u.permissionRepository.List(ctx, nil, filter)
 	if err != nil {
 		return err
 	}
@@ -124,7 +130,11 @@ func (u *RegisterPermissionUsecaseImpl) UpdateExistingPermissionsCache(ctx conte
 			if existingPermission.Resource == permission.Resource && existingPermission.Action == permission.Action {
 				// This permission exists in DB and is still valid, update cache
 				cacheKey := permission.Resource + "." + permission.Action
-				u.cacher.Set(cacheKey, []byte("false"), 0)
+				isPublic := "false"
+				if existingPermission.IsPublic {
+					isPublic = "true"
+				}
+				u.cacher.Set(cacheKey, []byte(isPublic), 0)
 				break
 			}
 		}

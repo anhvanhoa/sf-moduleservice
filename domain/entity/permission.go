@@ -20,6 +20,6 @@ func (p *Permission) TableName() any {
 }
 
 type PermissionFilter struct {
-	Resource string
+	Resource []string
 	Action   string
 }

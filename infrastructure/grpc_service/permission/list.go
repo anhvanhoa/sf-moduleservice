@@ -17,7 +17,7 @@ func (s *permissionService) ListPermissions(ctx context.Context, req *proto_perm
 	}
 	var filter entity.PermissionFilter
 	if req.Filter != nil {
-		filter.Resource = req.Filter.Resource
+		filter.Resource = []string{req.Filter.Resource}
 		filter.Action = req.Filter.Action
 	}
 	result, err := s.permissionUsecase.List(ctx, pagination, filter)

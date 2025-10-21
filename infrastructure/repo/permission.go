@@ -45,8 +45,8 @@ func (r *permissionRepository) List(ctx context.Context, pagination *common.Pagi
 	var permissions []*entity.Permission
 	query := r.db.Model(&permissions).Context(ctx)
 	if filter != nil {
-		if filter.Resource != "" {
-			query = query.Where("resource = ?", filter.Resource)
+		if len(filter.Resource) > 0 {
+			query = query.Where("resource IN (?)", pg.In(filter.Resource))
 		}
 		if filter.Action != "" {
 			query = query.Where("action = ?", filter.Action)
