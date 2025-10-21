@@ -23,6 +23,8 @@ github.com/anhvanhoa/service-core v0.0.0-20251020170517-cfbb190df828 h1:TAc+9CrV
 github.com/anhvanhoa/service-core v0.0.0-20251020170517-cfbb190df828/go.mod h1:BxIDMQXp6Hii0xdARM1rmGIhJLsaZ07+0SWd6nEVG3Q=
 github.com/anhvanhoa/service-core v0.0.0-20251020172747-f7fb8c899980 h1:/5i5UpiQjXl3e4dRHAGhVYnBMLLNxiKmsmEck+Q5B/c=
 github.com/anhvanhoa/service-core v0.0.0-20251020172747-f7fb8c899980/go.mod h1:BxIDMQXp6Hii0xdARM1rmGIhJLsaZ07+0SWd6nEVG3Q=
+github.com/anhvanhoa/service-core v0.0.0-20251021093305-321a7257f2c9 h1:0/t7sLaoniyuLZptJWCfeDjLVVRSfyIRYtGGwbwDV+k=
+github.com/anhvanhoa/service-core v0.0.0-20251021093305-321a7257f2c9/go.mod h1:BxIDMQXp6Hii0xdARM1rmGIhJLsaZ07+0SWd6nEVG3Q=
 github.com/anhvanhoa/sf-proto v0.0.0-20251016023903-371aa714f4f4 h1:mlhoARlilRMtf97e+gWb99g/tDySPwoJCP/bMkTTUZU=
 github.com/anhvanhoa/sf-proto v0.0.0-20251016023903-371aa714f4f4/go.mod h1:fDjSJFXd2PoPiOod6qKRGVjurABW3IuMERwuqyUf3u0=
 github.com/anhvanhoa/sf-proto v0.0.0-20251016163703-9927554855c2 h1:ZbQkN863GQ4nvZRoHHZb82ZX4W0qYsKojewHV6zn36c=
