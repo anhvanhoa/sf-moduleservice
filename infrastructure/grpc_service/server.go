@@ -43,6 +43,7 @@ func NewGRPCServer(
 			proto_user_role.RegisterUserRoleServiceServer(server, userRoleServer)
 		},
 		middleware.AuthorizationInterceptor(
+			env.SecretService,
 			func(action string, resource string) bool {
 				hasPermission, err := cacher.Get(resource + "." + action)
 				if err != nil {

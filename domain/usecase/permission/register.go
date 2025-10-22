@@ -39,6 +39,9 @@ func (u *RegisterPermissionUsecaseImpl) getPermissionKey(resource, action string
 func (u *RegisterPermissionUsecaseImpl) batchSetCache(permissions []*entity.Permission, value string) {
 	for _, permission := range permissions {
 		cacheKey := u.getPermissionKey(permission.Resource, permission.Action)
+		if permission.Action == "Check" {
+			value = "true"
+		}
 		u.cacher.Set(cacheKey, []byte(value), 0)
 	}
 }
@@ -57,6 +60,9 @@ func (u *RegisterPermissionUsecaseImpl) batchUpdateCache(permissions []*entity.P
 		cacheKey := u.getPermissionKey(permission.Resource, permission.Action)
 		isPublic := "false"
 		if permission.IsPublic {
+			isPublic = "true"
+		}
+		if permission.Action == "Check" {
 			isPublic = "true"
 		}
 		u.cacher.Set(cacheKey, []byte(isPublic), 0)
@@ -109,6 +115,9 @@ func (u *RegisterPermissionUsecaseImpl) DiffPermissions(ctx context.Context, per
 	for _, permission := range permissions {
 		key := u.getPermissionKey(permission.Resource, permission.Action)
 		if _, exists := existingMap[key]; !exists {
+			if permission.Action == "Check" {
+				permission.IsPublic = true
+			}
 			diffPermissions = append(diffPermissions, permission)
 		}
 	}
