@@ -10,8 +10,6 @@ import (
 	role_service "module-service/infrastructure/grpc_service/role"
 	role_permission_service "module-service/infrastructure/grpc_service/role_permission"
 	user_role_service "module-service/infrastructure/grpc_service/user_role"
-
-	"github.com/anhvanhoa/service-core/domain/discovery"
 )
 
 func main() {
@@ -22,18 +20,6 @@ func StartGRPCServer() {
 	app := bootstrap.App()
 	env := app.Env
 	log := app.Log
-	discoveryConfig := discovery.DiscoveryConfig{
-		ServiceName:   env.NameService,
-		ServicePort:   env.PortGprc,
-		ServiceHost:   env.HostGprc,
-		IntervalCheck: env.IntervalCheck,
-		TimeoutCheck:  env.TimeoutCheck,
-	}
-	discovery, err := discovery.NewDiscovery(&discoveryConfig)
-	if err != nil {
-		log.Fatal("Failed to create discovery: " + err.Error())
-	}
-	discovery.Register()
 
 	permissionServer := permission_service.NewPermissionServer(app.Repos, app.Cacher, app.Helper)
 	roleServer := role_service.NewRoleServer(app.Repos)

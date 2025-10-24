@@ -3,7 +3,7 @@ module module-service
 go 1.24.6
 
 require (
-	github.com/anhvanhoa/service-core v0.0.0-20251022043911-49f84d5110c2
+	github.com/anhvanhoa/service-core v0.0.0-20251024035606-4413ee8a0db8
 	github.com/anhvanhoa/sf-proto v0.0.0-20251021093736-e2719d3e1c04
 	github.com/go-pg/pg/v10 v10.15.0
 	go.uber.org/zap v1.27.0
@@ -71,7 +71,7 @@ require (
 	golang.org/x/crypto v0.42.0 // indirect
 	golang.org/x/exp v0.0.0-20250819193227-8b4c13bb791b // indirect
 	golang.org/x/sys v0.36.0 // indirect
-	golang.org/x/text v0.29.0 // indirect
+	golang.org/x/text v0.30.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	mellium.im/sasl v0.3.2 // indirect
 )
