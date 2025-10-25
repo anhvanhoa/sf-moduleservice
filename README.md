@@ -108,7 +108,7 @@ jwt:
 
 # Server Configuration
 server:
-  grpc_port: 50051
+  grpc_port: 40051
   http_port: 8080
 
 # Logging
@@ -180,7 +180,7 @@ import (
 )
 
 func main() {
-    conn, err := grpc.Dial("localhost:50051", grpc.WithTransportCredentials(insecure.NewCredentials()))
+    conn, err := grpc.Dial("localhost:40051", grpc.WithTransportCredentials(insecure.NewCredentials()))
     if err != nil {
         log.Fatalf("Failed to connect: %v", err)
     }
@@ -307,7 +307,7 @@ services:
   app:
     build: .
     ports:
-      - "50051:50051"
+      - "40051:40051"
     environment:
       - CONFIG_FILE=dev.config.yaml
     depends_on:
@@ -345,7 +345,7 @@ docker-compose up -d
 | Variable | Description | Default |
 |----------|-------------|---------|
 | `CONFIG_FILE` | Path to configuration file | `dev.config.yaml` |
-| `GRPC_PORT` | gRPC server port | `50051` |
+| `GRPC_PORT` | gRPC server port | `40051` |
 | `DB_HOST` | Database host | `localhost` |
 | `DB_PORT` | Database port | `5432` |
 | `DB_USER` | Database user | `postgres` |

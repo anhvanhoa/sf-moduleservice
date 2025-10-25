@@ -2,7 +2,7 @@ node_env: "development"
 secret_service: "PermissionServiceSecret"
 url_db: "postgres://postgres:123456@localhost:5432/permission_service_db?sslmode=disable"
 name_service: "PermissionService"
-port_grpc: 50051
+port_grpc: 40051
 host_grpc: "localhost"
 interval_check: "10s"
 timeout_check: "5s"
