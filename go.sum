@@ -8,6 +8,12 @@ github.com/anhvanhoa/service-core v0.0.0-20251024035606-4413ee8a0db8 h1:r5Rp1GtQ
 github.com/anhvanhoa/service-core v0.0.0-20251024035606-4413ee8a0db8/go.mod h1:F7bSEcqPiSc+4Ga5VWPvUqrLcLOod3qInZWhsYgnP7Q=
 github.com/anhvanhoa/sf-proto v0.0.0-20251021093736-e2719d3e1c04 h1:f/gkiHx7eDBZqvyk658tFuvXNAay5Hj4v2vP7wMSf1g=
 github.com/anhvanhoa/sf-proto v0.0.0-20251021093736-e2719d3e1c04/go.mod h1:fDjSJFXd2PoPiOod6qKRGVjurABW3IuMERwuqyUf3u0=
+github.com/anhvanhoa/sf-proto v0.0.0-20251028015026-e9c9bf75fc31 h1:jIsjAtqDC1kjYJ+umveEii28GzkXIYz83UI3IFe+sVA=
+github.com/anhvanhoa/sf-proto v0.0.0-20251028015026-e9c9bf75fc31/go.mod h1:fDjSJFXd2PoPiOod6qKRGVjurABW3IuMERwuqyUf3u0=
+github.com/anhvanhoa/sf-proto v0.0.0-20251028015838-2047cfed386e h1:B81u4tczLU6MY/jP+UrxTFMD1cYXVF57FRQL9Y3CtZs=
+github.com/anhvanhoa/sf-proto v0.0.0-20251028015838-2047cfed386e/go.mod h1:fDjSJFXd2PoPiOod6qKRGVjurABW3IuMERwuqyUf3u0=
+github.com/anhvanhoa/sf-proto v0.0.0-20251028020101-71e013dbb485 h1:AgjYIB9D5lAN5MEpbrN67r9hUn7t39j4vUEnAmmOftw=
+github.com/anhvanhoa/sf-proto v0.0.0-20251028020101-71e013dbb485/go.mod h1:fDjSJFXd2PoPiOod6qKRGVjurABW3IuMERwuqyUf3u0=
 github.com/antlr4-go/antlr/v4 v4.13.1 h1:SqQKkuVZ+zWkMMNkjy5FZe5mr5WURWnlpmOuzYWrPrQ=
 github.com/antlr4-go/antlr/v4 v4.13.1/go.mod h1:GKmUxMtwp6ZgGwZSva4eWPC5mS6vUAmOABFgjdkM7Nw=
 github.com/bsm/ginkgo/v2 v2.12.0 h1:Ny8MWAHyOepLGlLKYmXG4IEkioBysk6GpaRTLC8zwWs=

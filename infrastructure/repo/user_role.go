@@ -6,6 +6,7 @@ import (
 	"module-service/domain/repository"
 
 	"github.com/anhvanhoa/service-core/common"
+	"github.com/anhvanhoa/service-core/domain/user_context"
 	"github.com/anhvanhoa/service-core/utils"
 	"github.com/go-pg/pg/v10"
 )
@@ -99,4 +100,90 @@ func (r *userRoleRepository) Exists(ctx context.Context, userID, roleID string) 
 	count, err := r.db.Model(&entity.UserRole{}).Context(ctx).
 		Where("user_id = ? AND role_id = ?", userID, roleID).Count()
 	return count > 0, err
+}
+
+func (r *userRoleRepository) GetUserPermissions(ctx context.Context, userID string) (user_context.UserContext, error) {
+	uCtx := user_context.NewUserContext()
+	uCtx.UserID = userID
+
+	roleMap := make(map[string]bool, 2)
+	permissionMap := make(map[string]user_context.Permission, 20)
+	scopes := make([]user_context.Scope, 0, 10)
+
+	var rolePermissionResults []struct {
+		RoleName string
+		Resource string
+		Action   string
+	}
+
+	rolePermissionQuery := `
+		SELECT DISTINCT
+			r.name as role_name,
+			p.resource,
+			p.action
+		FROM user_roles ur
+		INNER JOIN roles r ON ur.role_id = r.id
+		INNER JOIN role_permissions rp ON r.id = rp.role_id
+		INNER JOIN permissions p ON rp.permission_id = p.id
+		WHERE ur.user_id = ? AND r.status = 'active'
+		ORDER BY r.name, p.resource, p.action
+	`
+
+	_, err := r.db.Query(&rolePermissionResults, rolePermissionQuery, userID)
+	if err != nil {
+		return *uCtx, err
+	}
+
+	for _, result := range rolePermissionResults {
+		roleMap[result.RoleName] = true
+		permissionKey := result.Resource + "." + result.Action
+		permissionMap[permissionKey] = user_context.Permission{
+			Resource: result.Resource,
+			Action:   result.Action,
+		}
+	}
+
+	var scopeResults []struct {
+		ResourceType string
+		ResourceData map[string]string
+		Action       string
+	}
+
+	scopeQuery := `
+		SELECT 
+			resource_type,
+			resource_data,
+			action
+		FROM resource_permissions
+		WHERE user_id = ?
+		ORDER BY resource_type, action
+	`
+
+	_, err = r.db.Query(&scopeResults, scopeQuery, userID)
+	if err != nil {
+		return *uCtx, err
+	}
+
+	for _, result := range scopeResults {
+		scopes = append(scopes, user_context.Scope{
+			Resource:     result.ResourceType,
+			ResourceData: result.ResourceData,
+			Action:       result.Action,
+		})
+	}
+
+	roles := make([]string, 0, len(roleMap))
+	for role := range roleMap {
+		roles = append(roles, role)
+	}
+
+	permissions := make([]user_context.Permission, 0, len(permissionMap))
+	for _, permission := range permissionMap {
+		permissions = append(permissions, permission)
+	}
+
+	uCtx.Roles = roles
+	uCtx.Permissions = permissions
+	uCtx.Scopes = scopes
+	return *uCtx, nil
 }

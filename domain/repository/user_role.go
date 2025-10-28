@@ -5,6 +5,7 @@ import (
 	"module-service/domain/entity"
 
 	"github.com/anhvanhoa/service-core/common"
+	"github.com/anhvanhoa/service-core/domain/user_context"
 )
 
 type UserRoleRepository interface {
@@ -17,4 +18,5 @@ type UserRoleRepository interface {
 	CountByUserID(ctx context.Context, userID string) (int64, error)
 	CountByRoleID(ctx context.Context, roleID string) (int64, error)
 	Exists(ctx context.Context, userID, roleID string) (bool, error)
+	GetUserPermissions(ctx context.Context, userID string) (user_context.UserContext, error)
 }

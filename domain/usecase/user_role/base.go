@@ -6,6 +6,7 @@ import (
 	"module-service/domain/repository"
 
 	"github.com/anhvanhoa/service-core/common"
+	"github.com/anhvanhoa/service-core/domain/user_context"
 	"github.com/anhvanhoa/service-core/utils"
 )
 
@@ -19,31 +20,34 @@ type UserRoleUsecaseI interface {
 	CountByUserID(ctx context.Context, userID string) (int64, error)
 	CountByRoleID(ctx context.Context, roleID string) (int64, error)
 	Exists(ctx context.Context, userID, roleID string) (bool, error)
+	GetUserPermissions(ctx context.Context, userID string) (user_context.UserContext, error)
 }
 
 type UserRoleUsecaseImpl struct {
-	createUserRoleUsecase CreateUserRoleUsecase
-	listUserRolesUsecase  ListUserRolesUsecase
-	deleteUserRoleUsecase DeleteUserRoleUsecase
-	deleteByUserIDUsecase DeleteByUserIDUsecase
-	deleteByRoleIDUsecase DeleteByRoleIDUsecase
-	countUserRolesUsecase CountUserRolesUsecase
-	countByUserIDUsecase  CountByUserIDUsecase
-	countByRoleIDUsecase  CountByRoleIDUsecase
-	existsUserRoleUsecase ExistsUserRoleUsecase
+	createUserRoleUsecase     CreateUserRoleUsecase
+	listUserRolesUsecase      ListUserRolesUsecase
+	deleteUserRoleUsecase     DeleteUserRoleUsecase
+	deleteByUserIDUsecase     DeleteByUserIDUsecase
+	deleteByRoleIDUsecase     DeleteByRoleIDUsecase
+	countUserRolesUsecase     CountUserRolesUsecase
+	countByUserIDUsecase      CountByUserIDUsecase
+	countByRoleIDUsecase      CountByRoleIDUsecase
+	existsUserRoleUsecase     ExistsUserRoleUsecase
+	getUserPermissionsUsecase GetUserPermissionsUsecase
 }
 
 func NewUserRoleUsecase(userRoleRepository repository.UserRoleRepository, helper utils.Helper) UserRoleUsecaseI {
 	return &UserRoleUsecaseImpl{
-		createUserRoleUsecase: NewCreateUserRoleUsecase(userRoleRepository),
-		listUserRolesUsecase:  NewListUserRolesUsecase(userRoleRepository, helper),
-		deleteUserRoleUsecase: NewDeleteUserRoleUsecase(userRoleRepository),
-		deleteByUserIDUsecase: NewDeleteByUserIDUsecase(userRoleRepository),
-		deleteByRoleIDUsecase: NewDeleteByRoleIDUsecase(userRoleRepository),
-		countUserRolesUsecase: NewCountUserRolesUsecase(userRoleRepository),
-		countByUserIDUsecase:  NewCountByUserIDUsecase(userRoleRepository),
-		countByRoleIDUsecase:  NewCountByRoleIDUsecase(userRoleRepository),
-		existsUserRoleUsecase: NewExistsUserRoleUsecase(userRoleRepository),
+		createUserRoleUsecase:     NewCreateUserRoleUsecase(userRoleRepository),
+		listUserRolesUsecase:      NewListUserRolesUsecase(userRoleRepository, helper),
+		deleteUserRoleUsecase:     NewDeleteUserRoleUsecase(userRoleRepository),
+		deleteByUserIDUsecase:     NewDeleteByUserIDUsecase(userRoleRepository),
+		deleteByRoleIDUsecase:     NewDeleteByRoleIDUsecase(userRoleRepository),
+		countUserRolesUsecase:     NewCountUserRolesUsecase(userRoleRepository),
+		countByUserIDUsecase:      NewCountByUserIDUsecase(userRoleRepository),
+		countByRoleIDUsecase:      NewCountByRoleIDUsecase(userRoleRepository),
+		existsUserRoleUsecase:     NewExistsUserRoleUsecase(userRoleRepository),
+		getUserPermissionsUsecase: NewGetUserPermissionsUsecase(userRoleRepository),
 	}
 }
 
@@ -81,4 +85,8 @@ func (u *UserRoleUsecaseImpl) CountByRoleID(ctx context.Context, roleID string) 
 
 func (u *UserRoleUsecaseImpl) Exists(ctx context.Context, userID, roleID string) (bool, error) {
 	return u.existsUserRoleUsecase.Execute(ctx, userID, roleID)
+}
+
+func (u *UserRoleUsecaseImpl) GetUserPermissions(ctx context.Context, userID string) (user_context.UserContext, error) {
+	return u.getUserPermissionsUsecase.Execute(ctx, userID)
 }
