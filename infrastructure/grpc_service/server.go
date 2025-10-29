@@ -12,6 +12,7 @@ import (
 
 	"github.com/anhvanhoa/service-core/domain/cache"
 	"github.com/anhvanhoa/service-core/domain/log"
+	"github.com/anhvanhoa/service-core/domain/token"
 	"github.com/anhvanhoa/service-core/domain/user_context"
 	"google.golang.org/grpc"
 )
@@ -31,7 +32,9 @@ func NewGRPCServer(
 		NameService:  env.NameService,
 		IsProduction: env.IsProduction(),
 	}
-	middleware := grpc_service.NewMiddleware()
+	middleware := grpc_service.NewMiddleware(
+		token.NewToken(env.AccessSecret),
+	)
 	return grpc_service.NewGRPCServer(
 		config,
 		log,
@@ -51,8 +54,8 @@ func NewGRPCServer(
 				}
 				return hasPermission != nil && string(hasPermission) == "true"
 			},
-			func(id string) *user_context.UserContext {
-				userData, err := cacher.Get(id)
+			func(at string) *user_context.UserContext {
+				userData, err := cacher.Get(at)
 				if err != nil || userData == nil {
 					return nil
 				}
