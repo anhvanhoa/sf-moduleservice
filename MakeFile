@@ -60,4 +60,4 @@ seed: ## Run all pending migrations
 	go run script/seed/main.go ${type}
 
 docker-build:
-	export NODE_ENV=${NODE_ENV} CONFIG_FILE=${CONFIG_FILE} && docker compose up -d --build
+	export CONFIG_FILE=${CONFIG_FILE} && docker compose up -d --build
